@@ -109,6 +109,14 @@
 					</linkedResources>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<repoToken>3Jmf3Ynz8xZavoB3t35pKPCGsHdzEsFQP</repoToken>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
