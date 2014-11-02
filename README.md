@@ -22,11 +22,15 @@ The configuration file is /src/main/webapp/WEB_INF/classes/repository.properties
 	# Don't modify unless you know exactly what you are doing	
 	class=org.apache.chemistry.opencmis.inmemory.server.InMemoryServiceFactoryImpl
 
-	# List of repositories 's file path that define each repository in details  
+	# List of repositories file path that define each repository in details  
 	InMemoryServer.repositories=/A1.properties,/A2.properties
+
+In the next section, you have to configure each repository.
 
 Repository definition
 ==============
+There are many properties to configure for a repository. The most important ones are :
+auth.mode, InMemoryServer.RepositoryId, InMemoryServer.Class and InMemoryServer.TempDir.
 
 	# Authentication mode
 	auth.mode=basic
