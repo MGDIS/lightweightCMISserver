@@ -1,6 +1,6 @@
 # CMIS 1.1 compliant lightweight server #
 ### Status
-[![Build Status](https://travis-ci.org/johanlelan/lightweightCMISserver.svg?branch=master)](https://travis-ci.org/johanlelan/lightweightCMISserver)
+[![Build Status](https://travis-ci.org/johanlelan/lightweightCMISserver.svg?branch=master)](https://travis-ci.org/johanlelan/lightweightCMISserver) [![Coverage Status](https://img.shields.io/coveralls/johanlelan/lightweightCMISserver.svg)](https://coveralls.io/r/johanlelan/lightweightCMISserver)
 
 **This implementation is a fork of Apache Chemistry OpenCMIS inMemory Server (version 0.12).**
 
