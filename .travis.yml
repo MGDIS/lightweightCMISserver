@@ -1,1 +1,9 @@
 language: java
+deploy:
+  provider: releases
+  api-key: "f30bc6e2b5a70954a0686cae0666271f50900a42"
+  file: "chemistry-opencmis-server-0.12.0.war"
+  skip_cleanup: true
+  on:
+    tags: true
+    all_branches: true
