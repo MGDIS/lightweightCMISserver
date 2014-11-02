@@ -1,7 +1,7 @@
 # CMIS 1.1 compliant lightweight server #
 
 
-**This implementation is a fork of Apache Chemistry OpenCMIS inMemory Server.**
+**This implementation is a fork of Apache Chemistry OpenCMIS inMemory Server (version 0.12).**
 
 If you want a lightweight CMIS 1.1 server that allows custom types, secondary types and authentication support. This implementation is for you.
 
