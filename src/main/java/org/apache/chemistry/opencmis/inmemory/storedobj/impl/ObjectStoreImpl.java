@@ -255,7 +255,9 @@ public class ObjectStoreImpl implements ObjectStore {
         }
         
         fStoredObjectMap.put(id, so);
-        persistenceManager.saveObject(fStoredObjectMap, so, true);
+        if (saveOnExit) {
+            persistenceManager.saveObject(fStoredObjectMap, so, true);
+        }
         
         return id;
     }
@@ -375,12 +377,6 @@ public class ObjectStoreImpl implements ObjectStore {
         doc.setCustomProperties(propMap);
         doc.setRepositoryId(fRepositoryId);
         doc.setName(name);
-        String id = storeObject(doc);
-        doc.setId(id);
-        DocumentVersion version = doc.addVersion(versioningState, user);
-        setContent(version, contentStream);
-        version.createSystemBasePropertiesWhenCreated(propMap, user);
-        version.setCustomProperties(propMap);
         if (null != folder) {
             if (hasChild(folder, name)) {
                 throw new CmisNameConstraintViolationException("Cannot create document an object with name " + name
@@ -388,6 +384,13 @@ public class ObjectStoreImpl implements ObjectStore {
             }
             doc.addParentId(folder.getId());
         }
+        String id = storeObject(doc);
+        doc.setId(id);
+        DocumentVersion version = doc.addVersion(versioningState, user);
+        ContentStream content = setContent(version, contentStream);
+        version.setContent(content);
+        version.createSystemBasePropertiesWhenCreated(propMap, user);
+        version.setCustomProperties(propMap);
         int aclId = getAclId(((FolderImpl) folder), addACEs, removeACEs);
         doc.setAclId(aclId);
         if (null != policies) {

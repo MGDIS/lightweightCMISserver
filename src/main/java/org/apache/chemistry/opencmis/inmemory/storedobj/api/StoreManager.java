@@ -21,6 +21,7 @@ package org.apache.chemistry.opencmis.inmemory.storedobj.api;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.RepositoryInfo;
@@ -57,7 +58,7 @@ public interface StoreManager {
 	 * @param repositoryFilePath
      *            file path to persistence manager
      */
-    void initRepository(String repositoryId, String repositoryFilePath);
+    void initRepository(String repositoryId, Map<String, String> parameters);
 
     /**
      * Get the object store for the given repository id.
@@ -107,7 +108,7 @@ public interface StoreManager {
      *            class implementing the type creation, the class must implement
      *            the interface TypeCreator
      */
-    void createAndInitRepository(String repositoryId, String repositoryFilePath, String typeCreatorClassName);
+    void createAndInitRepository(String repositoryId, Map<String, String> parameters, String typeCreatorClassName);
 
     /**
      * Retrieve a list with all type definitions.

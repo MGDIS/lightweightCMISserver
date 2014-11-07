@@ -23,8 +23,12 @@ import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.Version;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.VersionedDocument;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
+import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FilingImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
+import org.apache.chemistry.opencmis.inmemory.storedobj.impl.VersionedDocumentImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,6 +132,7 @@ public class FilePersistence implements IPersistenceManager {
             stream = new ByteArrayInputStream(
                     org.apache.commons.io.FileUtils.readFileToByteArray(file));
 
+            LOG.info("Read content from " + file.getAbsolutePath());
             // stream = new BufferedInputStream(new FileInputStream(file),
             // BUFFER_SIZE);
             // stream.close();
@@ -160,6 +165,7 @@ public class FilePersistence implements IPersistenceManager {
             os = new FileOutputStream(newFile);
             org.apache.commons.io.IOUtils.copy(stream, os);
             os.close();
+            LOG.info("Write content in "+newFile.getAbsolutePath());
         } catch (IOException e) {
             throw new CmisStorageException("Could not write content in "
                     + newFile + ": " + e.getMessage(), e);
@@ -244,7 +250,7 @@ public class FilePersistence implements IPersistenceManager {
                     metadataFile), json.toString());
             // out.print(json);
             // out.flush();
-            LOG.debug("Writing object to : " + metadataFile);
+            LOG.info("Writing metadata in " + metadataFile);
         } catch (IOException e) {
             throw new CmisStorageException("Could not write metadata: "
                     + e.getMessage(), e);
@@ -267,6 +273,8 @@ public class FilePersistence implements IPersistenceManager {
         try {
             storedObjectStr = org.apache.commons.io.FileUtils
                     .readFileToString(metadataFile);
+
+            LOG.info("Read metadata from " + metadataFile.getAbsolutePath());
             // storedObjectStr = readAllLines(new FileReader(file));
         } catch (IOException e) {
             LOG.warn("When filtering with metadata", e);
@@ -310,7 +318,7 @@ public class FilePersistence implements IPersistenceManager {
             if (file.list().length == 0) {
 
                 file.delete();
-                LOG.debug("Directory is deleted : " + file.getAbsolutePath());
+                LOG.info("Directory is deleted : " + file.getAbsolutePath());
 
             } else {
 
@@ -328,7 +336,7 @@ public class FilePersistence implements IPersistenceManager {
                 // check the directory again, if empty then delete it
                 if (file.list().length == 0) {
                     file.delete();
-                    LOG.debug("Directory is deleted : "
+                    LOG.info("Directory is deleted : "
                             + file.getAbsolutePath());
                 }
             }
@@ -336,7 +344,7 @@ public class FilePersistence implements IPersistenceManager {
         } else {
             // if file, then delete it
             file.delete();
-            LOG.debug("File is deleted : " + file.getAbsolutePath());
+            LOG.info("File is deleted : " + file.getAbsolutePath());
         }
     }
 
@@ -357,6 +365,11 @@ public class FilePersistence implements IPersistenceManager {
         if (path.equals("")) {
             path = getRootPath();
         }
+        
+        //if (so instanceof VersionedDocument) {
+        //    path += "-" + ((VersionedDocument) so).getLatestVersion(major)getVersionLabel();
+        //}
+        
         return new File(path);
     }
 
@@ -394,7 +407,7 @@ public class FilePersistence implements IPersistenceManager {
             if (!newFile.exists()) {
                 // create the file
                 try {
-                    if (so instanceof DocumentImpl) {
+                    if (so instanceof FilingImpl) {
                         newFile.createNewFile();
                     } else if (so instanceof FolderImpl) {
                         newFile.mkdirs();

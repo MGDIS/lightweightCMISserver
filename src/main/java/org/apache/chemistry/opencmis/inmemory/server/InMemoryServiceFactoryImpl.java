@@ -312,13 +312,12 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
         }
 
         String repositoryId = parameters.get(ConfigConstants.REPOSITORY_ID);
-        String repositoryPath = parameters.get(ConfigConstants.TEMP_DIR);
 
         List<String> allAvailableRepositories = storeManager.getAllRepositoryIds();
 
         // init existing repositories
         for (String existingRepId : allAvailableRepositories) {
-            storeManager.initRepository(existingRepId, repositoryPath);
+            storeManager.initRepository(existingRepId, parameters);
         }
 
         // create repository if configured as a startup parameter
@@ -328,7 +327,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
             } else {
                 String typeCreatorClassName = parameters.get(ConfigConstants.TYPE_CREATOR_CLASS);
 				// Add repository file path
-                storeManager.createAndInitRepository(repositoryId, repositoryPath, typeCreatorClassName);
+                storeManager.createAndInitRepository(repositoryId, parameters, typeCreatorClassName);
                 created = true;
             }
         }

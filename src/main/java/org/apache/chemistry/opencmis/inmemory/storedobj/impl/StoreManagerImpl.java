@@ -62,6 +62,7 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryCapabili
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.RepositoryInfoImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.TypeDefinitionContainerImpl;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
+import org.apache.chemistry.opencmis.inmemory.ConfigConstants;
 import org.apache.chemistry.opencmis.inmemory.TypeCreator;
 import org.apache.chemistry.opencmis.inmemory.TypeManagerImpl;
 import org.apache.chemistry.opencmis.inmemory.query.InMemoryQueryProcessor;
@@ -109,6 +110,11 @@ public class StoreManagerImpl implements StoreManager {
     private final Map<String, TypeManagerImpl> fMapRepositoryToTypeManager = new HashMap<String, TypeManagerImpl>();
 
     /**
+     * Map from repository id to a type manager.
+     */
+    private final Map<String, RepositoryInfo> fMapRepositoryToInfo = new HashMap<String, RepositoryInfo>();
+
+    /**
      * Map from repository id to a user manager
      */
     private final Map<String, IUserManager> fMapRepositoryToUserManager = new HashMap<String, IUserManager>();
@@ -147,30 +153,34 @@ public class StoreManagerImpl implements StoreManager {
     }
 
     @Override
-    public void initRepository(String repositoryId, String repositoryFilePath) {
+    public void initRepository(String repositoryId, Map<String, String> parameters) {
         if (fMapRepositoryToObjectStore.containsKey(repositoryId)
                 || fMapRepositoryToTypeManager.containsKey(repositoryId)) {
             return;
         }
-        fMapRepositoryToObjectStore.put(repositoryId, new ObjectStoreImpl(repositoryId, repositoryFilePath, new FilePersistence()));
-        fMapRepositoryToTypeManager.put(repositoryId, new TypeManagerImpl());
+        internalInit(repositoryId, parameters);
     }
 
     @Override
-    public void createAndInitRepository(String repositoryId, String repositoryFilePath, String typeCreatorClassName) {
+    public void createAndInitRepository(String repositoryId, Map<String, String> parameters, String typeCreatorClassName) {
         if (fMapRepositoryToObjectStore.containsKey(repositoryId)
                 || fMapRepositoryToTypeManager.containsKey(repositoryId)) {
             throw new CmisInvalidArgumentException("Cannot add repository, repository " + repositoryId
                     + " already exists.");
         }
-
-        fMapRepositoryToObjectStore.put(repositoryId, new ObjectStoreImpl(repositoryId, repositoryFilePath, new FilePersistence()));
-        fMapRepositoryToTypeManager.put(repositoryId, new TypeManagerImpl());
-
+        internalInit(repositoryId, parameters);
+        
         // initialize the type system:
         initTypeSystem(repositoryId, typeCreatorClassName);
     }
 
+    private void internalInit(String repositoryId, Map<String, String> parameters){
+
+        fMapRepositoryToObjectStore.put(repositoryId, new ObjectStoreImpl(repositoryId, parameters.get(ConfigConstants.TEMP_DIR), new FilePersistence()));
+        fMapRepositoryToTypeManager.put(repositoryId, new TypeManagerImpl());
+        fMapRepositoryToInfo.put(repositoryId, createRepositoryInfo(repositoryId, parameters));
+    }
+    
     @Override
     public ObjectStore getObjectStore(String repositoryId) {
         return fMapRepositoryToObjectStore.get(repositoryId);
@@ -296,9 +306,13 @@ public class StoreManagerImpl implements StoreManager {
         if (null == sm) {
             return null;
         }
-
-        RepositoryInfo repoInfo = createRepositoryInfo(repositoryId);
-        return repoInfo;
+        
+        RepositoryInfo repoInfo = fMapRepositoryToInfo.get(repositoryId);
+        if (repoInfo != null) {
+            return repoInfo;
+        } else {
+            return createRepositoryInfo(repositoryId, new LinkedHashMap<String, String>());
+        }
     }
 
     public void clearTypeSystem(String repositoryId) {
@@ -359,20 +373,25 @@ public class StoreManagerImpl implements StoreManager {
     }
 
     @SuppressWarnings("serial")
-    private RepositoryInfo createRepositoryInfo(String repositoryId) {
-        boolean cmis11 = InMemoryServiceContext.getCallContext().getCmisVersion() != CmisVersion.CMIS_1_0;
+    private RepositoryInfo createRepositoryInfo(String repositoryId, Map<String, String> parameters) {
+        boolean cmis11 = InMemoryServiceContext.getCallContext() == null ? true : InMemoryServiceContext.getCallContext().getCmisVersion() != CmisVersion.CMIS_1_0;
         ObjectStore objStore = getObjectStore(repositoryId);
         String rootFolderId = objStore.getRootFolder().getId();
+        
+        String repositoryName = parameters.get(ConfigConstants.REPOSITORY_NAME);
+        String repositoryDescription = parameters.get(ConfigConstants.REPOSITORY_DESCRIPTION);
+        String repositoryThinClientURI = parameters.get(ConfigConstants.REPOSITORY_THINCLIENTURI);
+        
         // repository info
         RepositoryInfoImpl repoInfo;
         repoInfo = new RepositoryInfoImpl();
         repoInfo.setId(repositoryId == null ? "inMem" : repositoryId);
-        repoInfo.setName("Apache Chemistry OpenCMIS InMemory Repository");
-        repoInfo.setDescription("Apache Chemistry OpenCMIS InMemory Repository (Version: " + OPENCMIS_VERSION + ")");
+        repoInfo.setName(repositoryName == null ? "Apache Chemistry OpenCMIS InMemory Repository" : repositoryName);
+        repoInfo.setDescription(repositoryDescription == null ? "Apache Chemistry OpenCMIS InMemory Repository (Version: " + OPENCMIS_VERSION + ")" : repositoryDescription);
         repoInfo.setRootFolder(rootFolderId);
         repoInfo.setPrincipalAnonymous(InMemoryAce.getAnonymousUser());
         repoInfo.setPrincipalAnyone(InMemoryAce.getAnyoneUser());
-        repoInfo.setThinClientUri("");
+        repoInfo.setThinClientUri(repositoryThinClientURI == null ? "" : repositoryThinClientURI);
         repoInfo.setChangesIncomplete(Boolean.TRUE);
         repoInfo.setLatestChangeLogToken("token-24");
         repoInfo.setVendorName("Apache Chemistry");

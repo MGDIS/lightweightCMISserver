@@ -168,8 +168,10 @@ OF ANY KIND, either express or implied. See the license below for more informati
 <% 
    StoreManager sm = getStoreManager(request);
    for (String repId: sm.getAllRepositoryIds() ) {
+       out.println("<tr>");
        out.println("<td>" + repId + "</td>");
        out.println("<td>" + sm.getObjectStore(repId).getObjectCount() + "</td>");
+       out.println("</tr>");
    }       
 %>
 </table>

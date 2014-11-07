@@ -26,7 +26,7 @@ public final class ConfigConstants {
     public static final String REPOSITORY_CLASS = "InMemoryServer.Class";
     public static final String OVERRIDE_CALL_CONTEXT = "InMemoryServer.OverrideCallContext";
     public static final String MEMORY_THRESHOLD = "InMemoryServer.MemoryThreshold";
-    public static final String TEMP_DIR = "InMemoryServer.TempDir";
+    public static final String TEMP_DIR = "persistenceDirectory";
     public static final String MAX_CONTENT_SIZE = "InMemoryServer.MaxContentSize";
     public static final String ENCRYPT_TEMP_FILES = "InMemoryServer.EncryptTempFiles";
 
@@ -50,6 +50,9 @@ public final class ConfigConstants {
 
     public static final String PREFIX_USER = "user.";
     public static final String REPOSITORIES_FILES = "InMemoryServer.repositories";
+    public static final String REPOSITORY_NAME = "InMemoryServer.RepositoryName";
+    public static final Object REPOSITORY_DESCRIPTION = "InMemoryServer.RepositoryDescription";
+    public static final Object REPOSITORY_THINCLIENTURI = "InMemoryServer.RepositoryThinClientUri";
     
     private ConfigConstants() {
     }
