@@ -49,7 +49,6 @@ public final class ConfigConstants {
     public static final String DEPLOYMENT_TIME = "InMemoryServer.DeploymentTime";
 
     public static final String PREFIX_USER = "user.";
-    public static final String REPOSITORIES_FILES = "InMemoryServer.repositories";
     public static final String REPOSITORY_NAME = "InMemoryServer.RepositoryName";
     public static final Object REPOSITORY_DESCRIPTION = "InMemoryServer.RepositoryDescription";
     public static final Object REPOSITORY_THINCLIENTURI = "InMemoryServer.RepositoryThinClientUri";
