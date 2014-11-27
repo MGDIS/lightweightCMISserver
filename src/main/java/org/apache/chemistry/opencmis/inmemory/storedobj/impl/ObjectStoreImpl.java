@@ -1013,7 +1013,7 @@ public class ObjectStoreImpl implements ObjectStore {
         // iterate over all the objects and check for each if the type matches
         for (String objectId : getIds()) {
             StoredObject so = getObjectById(objectId);
-            if (so.getTypeId().equals(typeId)) {
+            if (so.getTypeId().equals(typeId) || so.getSecondaryTypeIds().contains(typeId)) {
                 return true;
             }
         }
