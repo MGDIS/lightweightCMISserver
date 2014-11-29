@@ -53,10 +53,13 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.CmisVersion;
 import org.apache.chemistry.opencmis.commons.impl.IOUtils;
+import org.apache.chemistry.opencmis.commons.impl.JSONConverter;
 import org.apache.chemistry.opencmis.commons.impl.XMLConverter;
 import org.apache.chemistry.opencmis.commons.impl.XMLUtils;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.AbstractTypeDefinition;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
+import org.apache.chemistry.opencmis.commons.impl.json.JSONArray;
+import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParser;
 import org.apache.chemistry.opencmis.commons.impl.server.AbstractServiceFactory;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
@@ -67,6 +70,7 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.api.ObjectStore;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoreManager;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoreManagerFactory;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoreManagerImpl;
+import org.apache.chemistry.opencmis.inmemory.types.TypeUtil;
 import org.apache.chemistry.opencmis.server.support.CmisServiceWrapper;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.apache.chemistry.opencmis.util.repository.ObjectGenerator;
@@ -387,7 +391,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
 
         // check if a type definitions XML file is configured. if yes import
         // type definitions
-        String typeDefsFileName = parameters.get(ConfigConstants.TYPE_XML);
+        String typeDefsFileName = parameters.get(ConfigConstants.TYPE_FILE);
         if (null == typeDefsFileName) {
             LOG.info("No file name for type definitions given, no types will be created.");
         } else {
@@ -425,7 +429,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
             return;
         }
 
-        try {
+       try {
             stream = new BufferedInputStream(typesStream);
             XMLStreamReader parser = XMLUtils.createParser(stream);
             XMLUtils.findNextStartElemenet(parser);
