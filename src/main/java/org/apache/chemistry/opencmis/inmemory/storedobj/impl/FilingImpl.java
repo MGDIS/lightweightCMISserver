@@ -24,8 +24,14 @@ import java.util.List;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.MultiFiling;
 import org.apache.chemistry.opencmis.utils.FilePersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class FilingImpl extends StoredObjectImpl implements Fileable, MultiFiling {
+public class FilingImpl extends StoredObjectImpl implements Fileable,
+        MultiFiling {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FilingImpl.class
+            .getName());
 
     private List<String> parentIds = new ArrayList<String>(1);
 
@@ -46,10 +52,15 @@ public class FilingImpl extends StoredObjectImpl implements Fileable, MultiFilin
     @Override
     public String getPathSegment() {
         StringBuilder stb = new StringBuilder();
-        if (hasParent() && getParentIds().get(0) != FilePersistence.rootId) {
-            String parentPathSegment = ((FolderImpl) getStore().getObjectById( getParentIds().get(0))).getPathSegment();
-            stb.append(parentPathSegment);
-            stb.append("/");
+        if (hasParent()) {
+            String firstParentId = getParentIds().get(0);
+            if (firstParentId != null && !firstParentId.equals(FilePersistence.rootId) && getStore().hasObject(firstParentId)) {
+                String parentPathSegment = ((FolderImpl) getStore().getObjectById(firstParentId)).getPathSegment();
+                if (parentPathSegment != null) {
+                    stb.append(parentPathSegment);
+                    stb.append("/");
+                }
+            }
         }
         stb.append(super.getName());
         return stb.toString();

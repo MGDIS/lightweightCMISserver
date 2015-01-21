@@ -54,6 +54,7 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         }
 
         DocumentVersionImpl ver = new DocumentVersionImpl(fRepositoryId, this, verState);
+        ver.setStore(this.getStore());
         ver.setSystemBasePropertiesWhenCreatedDirect(getName(), getTypeId(), user); // copy
         // name and type id from version series.
         fVersions.add(ver);

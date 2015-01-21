@@ -237,7 +237,7 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
         LOG.debug("start getObjectParents()");
 
         StoredObject so = validator.getObjectParents(context, repositoryId, objectId, extension);
-
+        so.setStore(fStoreManager.getObjectStore(repositoryId));
         // for now we have only folders that have a parent and the in-memory
         // provider only has one
         // parent for each object (no multi-filing)

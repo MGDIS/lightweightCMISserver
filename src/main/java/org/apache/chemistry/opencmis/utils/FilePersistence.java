@@ -129,7 +129,7 @@ public class FilePersistence implements IPersistenceManager {
             stream = new ByteArrayInputStream(
                     org.apache.commons.io.FileUtils.readFileToByteArray(file));
 
-            LOG.info("Read content from " + file.getAbsolutePath());
+            LOG.debug("Read content from " + file.getAbsolutePath());
             // stream = new BufferedInputStream(new FileInputStream(file),
             // BUFFER_SIZE);
             // stream.close();
@@ -162,7 +162,7 @@ public class FilePersistence implements IPersistenceManager {
             os = new FileOutputStream(newFile);
             org.apache.commons.io.IOUtils.copy(stream, os);
             os.close();
-            LOG.info("Write content in "+newFile.getAbsolutePath());
+            LOG.debug("Write content in "+newFile.getAbsolutePath());
         } catch (IOException e) {
             throw new CmisStorageException("Could not write content in "
                     + newFile + ": " + e.getMessage(), e);
@@ -178,8 +178,8 @@ public class FilePersistence implements IPersistenceManager {
                 return rootId;
             }
             if (so instanceof Fileable) {
-                return fileToId(new File(getRootPath(),
-                        ((Fileable) so).getPathSegment()));
+                String pathSegment = ((Fileable) so).getPathSegment();
+                return fileToId(new File(getRootPath(), pathSegment));
             } else {
                 return fileToId(new File(getRootPath(), so.getName()));
             }
@@ -247,7 +247,7 @@ public class FilePersistence implements IPersistenceManager {
                     metadataFile), json.toString());
             // out.print(json);
             // out.flush();
-            LOG.info("Writing metadata in " + metadataFile);
+            LOG.debug("Writing metadata in " + metadataFile);
         } catch (IOException e) {
             throw new CmisStorageException("Could not write metadata: "
                     + e.getMessage(), e);
@@ -271,7 +271,7 @@ public class FilePersistence implements IPersistenceManager {
             storedObjectStr = org.apache.commons.io.FileUtils
                     .readFileToString(metadataFile);
 
-            LOG.info("Read metadata from " + metadataFile.getAbsolutePath());
+            LOG.debug("Read metadata from " + metadataFile.getAbsolutePath());
             // storedObjectStr = readAllLines(new FileReader(file));
         } catch (IOException e) {
             LOG.warn("When filtering with metadata", e);
@@ -315,7 +315,7 @@ public class FilePersistence implements IPersistenceManager {
             if (file.list().length == 0) {
 
                 file.delete();
-                LOG.info("Directory is deleted : " + file.getAbsolutePath());
+                LOG.debug("Directory is deleted : " + file.getAbsolutePath());
 
             } else {
 
@@ -333,7 +333,7 @@ public class FilePersistence implements IPersistenceManager {
                 // check the directory again, if empty then delete it
                 if (file.list().length == 0) {
                     file.delete();
-                    LOG.info("Directory is deleted : "
+                    LOG.debug("Directory is deleted : "
                             + file.getAbsolutePath());
                 }
             }
@@ -341,7 +341,7 @@ public class FilePersistence implements IPersistenceManager {
         } else {
             // if file, then delete it
             file.delete();
-            LOG.info("File is deleted : " + file.getAbsolutePath());
+            LOG.debug("File is deleted : " + file.getAbsolutePath());
         }
     }
 

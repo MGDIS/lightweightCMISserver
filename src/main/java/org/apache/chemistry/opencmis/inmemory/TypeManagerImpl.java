@@ -148,7 +148,7 @@ public class TypeManagerImpl implements TypeManager {
     @Override
     public void addTypeDefinition(TypeDefinition cmisType, boolean addInheritedProperties) {
 
-        LOG.info("Adding type definition with name " + cmisType.getLocalName() + " and id " + cmisType.getId()
+        LOG.debug("Adding type definition with name " + cmisType.getLocalName() + " and id " + cmisType.getId()
                 + " to repository.");
         TypeDefinitionContainerImpl typeContainer = new TypeDefinitionContainerImpl(cmisType);
 

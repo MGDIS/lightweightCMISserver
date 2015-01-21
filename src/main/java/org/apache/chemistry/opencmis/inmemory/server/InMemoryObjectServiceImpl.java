@@ -868,7 +868,7 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
 
             TypeValidator.validateAllowedChildObjectTypes(typeDef, folder.getAllowedChildObjectTypeIds());
         }
-
+        
         // check if the given type is a document type
         if (!typeDef.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
             throw new CmisInvalidArgumentException("Cannot create a document, with a non-document type: "
@@ -930,11 +930,13 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
                     aclAdd, aclRemove, contentStreamNew, versioningState);
             createdDoc = version; // return the version and not the version series to
                           // caller
+            version.setStore(objectStore);
         } else {
             Document doc = objectStore.createDocument(propMap, user, folder, contentStreamNew, policies, aclAdd, aclRemove);
             createdDoc = doc;
+            createdDoc.setStore(objectStore);
         }
-
+        
         return createdDoc;
     }
 
@@ -1010,6 +1012,10 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
         Folder newFolder = objStore.createFolder(folderName, propertiesNew.getProperties(), user, parent, policies,
                 aclAdd, aclRemove);
         LOG.debug("stop createFolder()");
+
+        // add store
+        newFolder.setStore(objStore);
+        
         return newFolder;
     }
 
@@ -1036,6 +1042,9 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
         ObjectStore objStore = fStoreManager.getObjectStore(repositoryId);
         StoredObject storedObject = objStore.createPolicy(name, policyText, propMap, user, aclAdd, aclRemove);
 
+        // add store
+        storedObject.setStore(objStore);
+        
         return storedObject;
     }
 
@@ -1107,6 +1116,10 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
 
         StoredObject storedObject = objStore.createRelationship(name, relationObjects[0], relationObjects[1],
                 propMapNew, user, aclAdd, aclRemove);
+        
+        // add store
+        storedObject.setStore(objStore);
+        
         return storedObject;
     }
 
@@ -1182,6 +1195,9 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
 
         // Now we are sure to have document type definition:
         item = objectStore.createItem(name, propMapNew, user, folder, policies, aclAdd, aclRemove);
+        
+        // add store
+        item.setStore(objectStore);
         return item;
     }
 

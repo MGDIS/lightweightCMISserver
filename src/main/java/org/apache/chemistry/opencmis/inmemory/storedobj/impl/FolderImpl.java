@@ -103,11 +103,17 @@ public class FolderImpl extends StoredObjectImpl implements Folder {
     @Override
     public String getPathSegment() {
         StringBuilder stb = new StringBuilder();
-        if (hasParent() && !getParentIds().get(0).equals(FilePersistence.rootId)) {
-            String parentPathSegment = ((FolderImpl) getStore().getObjectById( getParentIds().get(0))).getPathSegment();
-            stb.append(parentPathSegment);
-            stb.append("/");
+        if (hasParent()) {
+            String firstParentId = getParentIds().get(0);
+            if (firstParentId != null && !firstParentId.equals(FilePersistence.rootId) && getStore().hasObject(firstParentId)) {
+                String parentPathSegment = ((FolderImpl) getStore().getObjectById(firstParentId)).getPathSegment();
+                if (parentPathSegment != null) {
+                    stb.append(parentPathSegment);
+                    stb.append("/");
+                }
+            }
         }
+        if (super.getName() == null) return null;
         stb.append(super.getName());
         return stb.toString();
     }

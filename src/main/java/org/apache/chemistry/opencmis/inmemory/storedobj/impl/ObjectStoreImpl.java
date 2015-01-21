@@ -377,6 +377,7 @@ public class ObjectStoreImpl implements ObjectStore {
         doc.createSystemBasePropertiesWhenCreated(propMap, user);
         doc.setCustomProperties(propMap);
         doc.setRepositoryId(fRepositoryId);
+        doc.setStore(this);
         doc.setName(name);
         if (null != folder) {
             if (hasChild(folder, name)) {
@@ -1090,8 +1091,13 @@ public class ObjectStoreImpl implements ObjectStore {
             ContentStream contentStream = content.getContent();
             if (null == contentStream) {
                 // get contentStream from persistence
-                return this.persistenceManager.readContent(this.persistenceManager.getFile(this.persistenceManager.getId(so)));
-                //return null;
+                if (so.getId().length() > 3) {
+                    // base64 encoded id
+                    return this.persistenceManager.readContent(this.persistenceManager.getFile(so.getId()));
+                }
+                else {
+                    return null;
+                }
             } else if (offset <= 0 && length < 0) {
                 return contentStream;
             } else {
@@ -1130,7 +1136,6 @@ public class ObjectStoreImpl implements ObjectStore {
                     throw new CmisRuntimeException("Failed to get content from InputStream", e);
                 }
             }
-            LOG.info("put content on memory");
             content.setContent(newContent);
             return newContent;
 
@@ -1173,6 +1178,10 @@ public class ObjectStoreImpl implements ObjectStore {
     @Override
     public IPersistenceManager getPersistenceManager() {
         return persistenceManager;
+    }
+    
+    public boolean hasObject(String objectId){
+        return fStoredObjectMap.containsKey(objectId);
     }
 
 }
