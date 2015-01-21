@@ -40,6 +40,7 @@ import org.apache.chemistry.opencmis.commons.impl.IOUtils;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.inmemory.DataObjectCreator;
 import org.apache.chemistry.opencmis.inmemory.FilterParser;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.ObjectStore;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 
 /**
@@ -543,6 +544,15 @@ public class StoredObjectImpl implements StoredObject {
             }
         }
         return false;
+    }
+    
+    private ObjectStore store;
+    public void setStore(ObjectStore store){
+        this.store = store;
+    }
+    
+    public ObjectStore getStore(){
+        return store;
     }
 
 }

@@ -23,12 +23,9 @@ import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
-import org.apache.chemistry.opencmis.inmemory.storedobj.api.Version;
-import org.apache.chemistry.opencmis.inmemory.storedobj.api.VersionedDocument;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FilingImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
-import org.apache.chemistry.opencmis.inmemory.storedobj.impl.VersionedDocumentImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +34,7 @@ public class FilePersistence implements IPersistenceManager {
     private static final Logger LOG = LoggerFactory
             .getLogger(FilePersistence.class.getName());
 
-    private String rootId = "@root@";
+    public static String rootId = "@root@";
 
     public FilePersistence() {
         
@@ -425,6 +422,8 @@ public class FilePersistence implements IPersistenceManager {
                 // write content, if available
                 if (contentStream != null && contentStream.getStream() != null) {
                     writeContent(newFile, contentStream.getStream());
+                    // remove content from so
+                    ((DocumentImpl) so).setContent(null);
                 }
             }
 

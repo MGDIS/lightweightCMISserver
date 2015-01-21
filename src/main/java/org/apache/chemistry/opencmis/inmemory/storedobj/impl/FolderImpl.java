@@ -32,6 +32,7 @@ import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.inmemory.FilterParser;
 import org.apache.chemistry.opencmis.inmemory.NameValidator;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
+import org.apache.chemistry.opencmis.utils.FilePersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,14 @@ public class FolderImpl extends StoredObjectImpl implements Folder {
 
     @Override
     public String getPathSegment() {
-        return getName();
+        StringBuilder stb = new StringBuilder();
+        if (hasParent() && !getParentIds().get(0).equals(FilePersistence.rootId)) {
+            String parentPathSegment = ((FolderImpl) getStore().getObjectById( getParentIds().get(0))).getPathSegment();
+            stb.append(parentPathSegment);
+            stb.append("/");
+        }
+        stb.append(super.getName());
+        return stb.toString();
     }
 
     @Override

@@ -91,9 +91,11 @@ public class FilePersistenceLoader {
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
                     so.setTypeId(BaseTypeId.CMIS_DOCUMENT.value());
                 }
-                ((DocumentImpl) so).setContent(persistenceManager
-                        .readContent(child));
+                // no content in memory
+                //((DocumentImpl) so).setContent(persistenceManager
+                //        .readContent(child));
                 so.setRepositoryId(repositoryId);
+                so.setStore(store);
             }
             LOG.debug("Loading file " + so.getName());
             store.storeObject(so, false);

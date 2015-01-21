@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.MultiFiling;
+import org.apache.chemistry.opencmis.utils.FilePersistence;
 
 public class FilingImpl extends StoredObjectImpl implements Fileable, MultiFiling {
 
@@ -44,7 +45,14 @@ public class FilingImpl extends StoredObjectImpl implements Fileable, MultiFilin
 
     @Override
     public String getPathSegment() {
-        return super.getName();
+        StringBuilder stb = new StringBuilder();
+        if (hasParent() && getParentIds().get(0) != FilePersistence.rootId) {
+            String parentPathSegment = ((FolderImpl) getStore().getObjectById( getParentIds().get(0))).getPathSegment();
+            stb.append(parentPathSegment);
+            stb.append("/");
+        }
+        stb.append(super.getName());
+        return stb.toString();
     }
 
     @Override

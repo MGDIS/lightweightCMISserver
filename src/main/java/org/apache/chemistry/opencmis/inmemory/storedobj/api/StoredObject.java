@@ -316,5 +316,17 @@ public interface StoredObject {
      *            id of policy to remove
      */
     void removePolicy(String policyId);
+    
+    /**
+     * set object store to allow each object to find its parent
+     * @param store
+     */
+    void setStore(ObjectStore store);
+    
+    /**
+     * Return the store of objects
+     * @return
+     */
+    ObjectStore getStore();
 
 }

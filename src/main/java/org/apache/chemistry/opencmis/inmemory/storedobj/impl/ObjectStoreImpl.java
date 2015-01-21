@@ -63,6 +63,7 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.api.Relationship;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.VersionedDocument;
 import org.apache.chemistry.opencmis.inmemory.types.DefaultTypeSystemCreator;
+import org.apache.chemistry.opencmis.utils.FilePersistence;
 import org.apache.chemistry.opencmis.utils.IPersistenceManager;
 import org.apache.chemistry.opencmis.utils.InMemoryPersistence;
 import org.slf4j.Logger;
@@ -254,10 +255,10 @@ public class ObjectStoreImpl implements ObjectStore {
             so.setId(id);
         }
         
-        fStoredObjectMap.put(id, so);
         if (saveOnExit) {
             persistenceManager.saveObject(fStoredObjectMap, so, true);
         }
+        fStoredObjectMap.put(id, so);
         
         return id;
     }
@@ -1088,7 +1089,9 @@ public class ObjectStoreImpl implements ObjectStore {
             Content content = (Content) so;
             ContentStream contentStream = content.getContent();
             if (null == contentStream) {
-                return null;
+                // get contentStream from persistence
+                return this.persistenceManager.readContent(this.persistenceManager.getFile(this.persistenceManager.getId(so)));
+                //return null;
             } else if (offset <= 0 && length < 0) {
                 return contentStream;
             } else {
@@ -1127,6 +1130,7 @@ public class ObjectStoreImpl implements ObjectStore {
                     throw new CmisRuntimeException("Failed to get content from InputStream", e);
                 }
             }
+            LOG.info("put content on memory");
             content.setContent(newContent);
             return newContent;
 
