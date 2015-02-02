@@ -107,7 +107,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
 
     private static final String CONFIG_FILENAME = "repository.properties";
 
-    @Override
+    
     public void init(Map<String, String> parameters) {
         LOG.info("Initializing in-memory server...");
         LOG.debug("Init parameters: " + parameters);
@@ -273,7 +273,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
         overrideCtx = ctx;
     }
 
-    @Override
+    
     public CmisService getService(CallContext context) {
         LOG.debug("start getService()");
 
@@ -317,27 +317,27 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
         return inMemoryService;
     }
 
-    @Override
+    
     public File getTempDirectory() {
         return tempDir;
     }
 
-    @Override
+    
     public boolean encryptTempFiles() {
         return encrypt;
     }
 
-    @Override
+    
     public int getMemoryThreshold() {
         return memoryThreshold;
     }
 
-    @Override
+    
     public long getMaxContentSize() {
         return maxContentSize;
     }
 
-    @Override
+    
     public void destroy() {
         LOG.debug("Destroying InMemory service instance.");
         if (null != cleanManager) {
@@ -486,73 +486,73 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
 
         class DummyCallContext implements CallContext {
 
-            @Override
+            
             public String get(String key) {
                 return null;
             }
 
-            @Override
+            
             public String getBinding() {
                 return null;
             }
 
-            @Override
+            
             public boolean isObjectInfoRequired() {
                 return false;
             }
 
-            @Override
+            
             public CmisVersion getCmisVersion() {
                 return CmisVersion.CMIS_1_1;
             }
 
-            @Override
+            
             public String getRepositoryId() {
                 return null;
             }
 
-            @Override
+            
             public String getLocale() {
                 return null;
             }
 
-            @Override
+            
             public BigInteger getOffset() {
                 return null;
             }
 
-            @Override
+            
             public BigInteger getLength() {
                 return null;
             }
 
-            @Override
+            
             public String getPassword() {
                 return null;
             }
 
-            @Override
+            
             public String getUsername() {
                 return null;
             }
 
-            @Override
+            
             public File getTempDirectory() {
 
                 return tempDir;
             }
 
-            @Override
+            
             public boolean encryptTempFiles() {
                 return encrypt;
             }
 
-            @Override
+            
             public int getMemoryThreshold() {
                 return memoryThreshold;
             }
 
-            @Override
+            
             public long getMaxContentSize() {
                 return maxContentSize;
             }
@@ -695,7 +695,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
         public void startCleanRepositoryJob(long intervalInMinutes) {
 
             final Runnable cleaner = new Runnable() {
-                @Override
+                
                 public void run() {
                     LOG.info("Cleaning repository as part of a scheduled maintenance job.");
                     for (String repositoryId : storeManager

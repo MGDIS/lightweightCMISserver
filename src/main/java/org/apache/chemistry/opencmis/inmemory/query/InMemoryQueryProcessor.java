@@ -244,7 +244,7 @@ public class InMemoryQueryProcessor {
         }
         class ResultComparator implements Comparator<StoredObject> {
 
-            @Override
+            
             @SuppressWarnings("unchecked")
             public int compare(StoredObject so1, StoredObject so2) {
                 SortSpec s = orderBy.get(0);
@@ -342,63 +342,63 @@ public class InMemoryQueryProcessor {
             this.user = user;
         }
 
-        @Override
+        
         public Boolean walkNot(Tree opNode, Tree node) {
             boolean hasMatched = walkPredicate(node);
             return !hasMatched;
         }
 
-        @Override
+        
         public Boolean walkAnd(Tree opNode, Tree leftNode, Tree rightNode) {
             boolean matches1 = walkPredicate(leftNode);
             boolean matches2 = walkPredicate(rightNode);
             return matches1 && matches2;
         }
 
-        @Override
+        
         public Boolean walkOr(Tree opNode, Tree leftNode, Tree rightNode) {
             boolean matches1 = walkPredicate(leftNode);
             boolean matches2 = walkPredicate(rightNode);
             return matches1 || matches2;
         }
 
-        @Override
+        
         public Boolean walkEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             Integer cmp = compareTo(leftNode, rightNode);
             return cmp == null ? false : cmp == 0;
         }
 
-        @Override
+        
         public Boolean walkNotEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             Integer cmp = compareTo(leftNode, rightNode);
             return cmp == null ? false : cmp != 0;
         }
 
-        @Override
+        
         public Boolean walkGreaterThan(Tree opNode, Tree leftNode, Tree rightNode) {
             Integer cmp = compareTo(leftNode, rightNode);
             return cmp == null ? false : cmp > 0;
         }
 
-        @Override
+        
         public Boolean walkGreaterOrEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             Integer cmp = compareTo(leftNode, rightNode);
             return cmp == null ? false : cmp >= 0;
         }
 
-        @Override
+        
         public Boolean walkLessThan(Tree opNode, Tree leftNode, Tree rightNode) {
             Integer cmp = compareTo(leftNode, rightNode);
             return cmp == null ? false : cmp < 0;
         }
 
-        @Override
+        
         public Boolean walkLessOrEquals(Tree opNode, Tree leftNode, Tree rightNode) {
             Integer cmp = compareTo(leftNode, rightNode);
             return cmp == null ? false : cmp <= 0;
         }
 
-        @Override
+        
         public Boolean walkIn(Tree opNode, Tree colNode, Tree listNode) {
             ColumnReference colRef = getColumnReference(colNode);
             PropertyDefinition<?> pd = colRef.getPropertyDefinition();
@@ -414,7 +414,7 @@ public class InMemoryQueryProcessor {
             }
         }
 
-        @Override
+        
         public Boolean walkNotIn(Tree opNode, Tree colNode, Tree listNode) {
             // Note just return !walkIn(node, colNode, listNode) is wrong,
             // because
@@ -432,7 +432,7 @@ public class InMemoryQueryProcessor {
             }
         }
 
-        @Override
+        
         public Boolean walkInAny(Tree opNode, Tree colNode, Tree listNode) {
             ColumnReference colRef = getColumnReference(colNode);
             PropertyDefinition<?> pd = colRef.getPropertyDefinition();
@@ -454,7 +454,7 @@ public class InMemoryQueryProcessor {
             }
         }
 
-        @Override
+        
         public Boolean walkNotInAny(Tree opNode, Tree colNode, Tree listNode) {
             // Note just return !walkNotInAny(node, colNode, listNode) is
             // wrong, because
@@ -479,7 +479,7 @@ public class InMemoryQueryProcessor {
             }
         }
 
-        @Override
+        
         public Boolean walkEqAny(Tree opNode, Tree literalNode, Tree colNode) {
             ColumnReference colRef = getColumnReference(colNode);
             PropertyDefinition<?> pd = colRef.getPropertyDefinition();
@@ -495,7 +495,7 @@ public class InMemoryQueryProcessor {
             }
         }
 
-        @Override
+        
         public Boolean walkIsNull(Tree opNode, Tree colNode) {
             ColumnReference colRef = getColumnReference(colNode);
             PropertyDefinition<?> pd = colRef.getPropertyDefinition();
@@ -503,7 +503,7 @@ public class InMemoryQueryProcessor {
             return propVal == null;
         }
 
-        @Override
+        
         public Boolean walkIsNotNull(Tree opNode, Tree colNode) {
             ColumnReference colRef = getColumnReference(colNode);
             PropertyDefinition<?> pd = colRef.getPropertyDefinition();
@@ -511,7 +511,7 @@ public class InMemoryQueryProcessor {
             return propVal != null;
         }
 
-        @Override
+        
         public Boolean walkLike(Tree opNode, Tree colNode, Tree stringNode) {
             Object rVal = walkExpr(stringNode);
             if (!(rVal instanceof String)) {
@@ -542,12 +542,12 @@ public class InMemoryQueryProcessor {
             }
         }
 
-        @Override
+        
         public Boolean walkNotLike(Tree opNode, Tree colNode, Tree stringNode) {
             return !walkLike(opNode, colNode, stringNode);
         }
 
-        @Override
+        
         public Boolean walkInFolder(Tree opNode, Tree qualNode, Tree paramNode) {
             if (null != qualNode) {
                 getTableReference(qualNode);
@@ -568,7 +568,7 @@ public class InMemoryQueryProcessor {
             }
         }
 
-        @Override
+        
         public Boolean walkInTree(Tree opNode, Tree qualNode, Tree paramNode) {
             if (null != qualNode) {
                 getTableReference(qualNode);
@@ -610,7 +610,7 @@ public class InMemoryQueryProcessor {
             return (List<Object>) walkExpr(node);
         }
 
-        @Override
+        
         protected Boolean walkTextAnd(Tree node) {
             List<Tree> terms = getChildrenAsList(node);
             for (Tree term : terms) {
@@ -622,7 +622,7 @@ public class InMemoryQueryProcessor {
             return true;
         }
 
-        @Override
+        
         protected Boolean walkTextOr(Tree node) {
             List<Tree> terms = getChildrenAsList(node);
             for (Tree term : terms) {
@@ -634,17 +634,17 @@ public class InMemoryQueryProcessor {
             return false;
         }
 
-        @Override
+        
         protected Boolean walkTextMinus(Tree node) {
             return !findText(node.getChild(0).getText());
         }
 
-        @Override
+        
         protected Boolean walkTextWord(Tree node) {
             return findText(node.getText());
         }
 
-        @Override
+        
         protected Boolean walkTextPhrase(Tree node) {
             String phrase = node.getText();
             return findText(phrase.substring(1, phrase.length() - 1));

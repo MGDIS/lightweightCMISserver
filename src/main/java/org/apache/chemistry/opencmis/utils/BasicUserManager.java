@@ -43,7 +43,7 @@ public class BasicUserManager implements IUserManager {
     /* (non-Javadoc)
      * @see org.apache.chemistry.opencmis.utils.IUserManager#getLogins()
      */
-    @Override
+    
     public synchronized Collection<String> getLogins() {
         return logins.keySet();
     }
@@ -51,7 +51,7 @@ public class BasicUserManager implements IUserManager {
     /* (non-Javadoc)
      * @see org.apache.chemistry.opencmis.utils.IUserManager#addLogin(java.lang.String, java.lang.String)
      */
-    @Override
+    
     public synchronized void addLogin(String username, String password) {
         if (username == null || password == null) {
             return;
@@ -63,7 +63,7 @@ public class BasicUserManager implements IUserManager {
     /* (non-Javadoc)
      * @see org.apache.chemistry.opencmis.utils.IUserManager#authenticate(org.apache.chemistry.opencmis.commons.server.CallContext)
      */
-    @Override
+    
     public synchronized String authenticate(CallContext context) {
         // check user and password
         if (!authenticate(context, context.getUsername(), context.getPassword())) {
@@ -91,7 +91,7 @@ public class BasicUserManager implements IUserManager {
         }
     }
 
-    @Override
+    
     public String toString() {
         StringBuilder sb = new StringBuilder();
 

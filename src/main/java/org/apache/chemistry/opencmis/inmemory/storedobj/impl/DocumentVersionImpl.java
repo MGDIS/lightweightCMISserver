@@ -61,7 +61,7 @@ public class DocumentVersionImpl extends StoredObjectImpl implements DocumentVer
         }
     }
 
-    @Override
+    
     public void setContent(ContentStream content) {
         setContentIntern(content);
     }
@@ -70,12 +70,12 @@ public class DocumentVersionImpl extends StoredObjectImpl implements DocumentVer
         fContent = content;
     }
 
-    @Override
+    
     public void setCheckinComment(String comment) {
         fComment = comment;
     }
 
-    @Override
+    
     public String getCheckinComment() {
         return fComment;
     }
@@ -99,28 +99,28 @@ public class DocumentVersionImpl extends StoredObjectImpl implements DocumentVer
         return label;
     }
 
-    @Override
+    
     public boolean isMajor() {
         return fIsMajor && !isPwc();
     }
 
-    @Override
+    
     public boolean isPwc() {
         return fIsPwc;
     }
 
-    @Override
+    
     public void commit(boolean isMajor) {
         fIsPwc = false; // unset working copy flag
         fIsMajor = isMajor;
     }
 
-    @Override
+    
     public ContentStream getContent() {
         return fContent;
     }
 
-    @Override
+    
     public VersionedDocument getParentDocument() {
         return fContainer;
     }
@@ -162,7 +162,7 @@ public class DocumentVersionImpl extends StoredObjectImpl implements DocumentVer
         return isLatestMajorVersion;
     }
 
-    @Override
+    
     public void fillProperties(Map<String, PropertyData<?>> properties, BindingsObjectFactory objFactory,
             List<String> requestedIds) {
 
@@ -258,47 +258,47 @@ public class DocumentVersionImpl extends StoredObjectImpl implements DocumentVer
 
     }
 
-    @Override
+    
     public int getAclId() {
         return ((StoredObjectImpl) fContainer).getAclId();
     }
 
-    @Override
+    
     public void setAclId(int id) {
         ((StoredObjectImpl) fContainer).setAclId(id);
     }
 
-    @Override
+    
     public List<String> getParentIds() {
         return fContainer.getParentIds();
     }
 
-    @Override
+    
     public String getPathSegment() {
         return fContainer.getPathSegment();
     }
 
-    @Override
+    
     public boolean hasContent() {
         return null != fContent;
     }
 
-    @Override
+    
     public boolean hasParent() {
         return fContainer.hasParent();
     }
 
-    @Override
+    
     public String getVersionLabel() {
         return createVersionLabel();
     }
 
-    @Override
+    
     public void addParentId(String parentId) {
         fContainer.addParentId(parentId);
     }
 
-    @Override
+    
     public void removeParentId(String parentId) {
         fContainer.removeParentId(parentId);
     }

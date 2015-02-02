@@ -39,7 +39,6 @@ public class VersionTestTypeSystemCreator implements TypeCreator {
      * in the public interface of this class we return the singleton containing
      * the required types for testing
      */
-    @Override
     public List<TypeDefinition> createTypesList() {
         return singletonTypes;
     }

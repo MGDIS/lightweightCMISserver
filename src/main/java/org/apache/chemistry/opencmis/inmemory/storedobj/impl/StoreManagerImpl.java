@@ -144,7 +144,7 @@ public class StoreManagerImpl implements StoreManager {
         return fMapRepositoryToObjectStore.get(repositoryId).getPersistenceManager();
     }
 
-    @Override
+    
     public List<String> getAllRepositoryIds() {
         Set<String> repIds = fMapRepositoryToObjectStore.keySet();
         List<String> result = new ArrayList<String>();
@@ -152,7 +152,7 @@ public class StoreManagerImpl implements StoreManager {
         return result;
     }
 
-    @Override
+    
     public void initRepository(String repositoryId, Map<String, String> parameters) {
         if (fMapRepositoryToObjectStore.containsKey(repositoryId)
                 || fMapRepositoryToTypeManager.containsKey(repositoryId)) {
@@ -161,7 +161,7 @@ public class StoreManagerImpl implements StoreManager {
         internalInit(repositoryId, parameters);
     }
 
-    @Override
+    
     public void createAndInitRepository(String repositoryId, Map<String, String> parameters, String typeCreatorClassName) {
         if (fMapRepositoryToObjectStore.containsKey(repositoryId)
                 || fMapRepositoryToTypeManager.containsKey(repositoryId)) {
@@ -181,22 +181,22 @@ public class StoreManagerImpl implements StoreManager {
         fMapRepositoryToInfo.put(repositoryId, createRepositoryInfo(repositoryId, parameters));
     }
     
-    @Override
+    
     public ObjectStore getObjectStore(String repositoryId) {
         return fMapRepositoryToObjectStore.get(repositoryId);
     }
 
-    @Override
+    
     public CmisServiceValidator getServiceValidator() {
         return new InMemoryServiceValidatorImpl(this);
     }
 
-    @Override
+    
     public BindingsObjectFactory getObjectFactory() {
         return fObjectFactory;
     }
 
-    @Override
+    
     public TypeDefinitionContainer getTypeById(String repositoryId, String typeId) {
         TypeManager typeManager = fMapRepositoryToTypeManager.get(repositoryId);
         if (null == typeManager) {
@@ -216,7 +216,7 @@ public class StoreManagerImpl implements StoreManager {
         return tdc;
     }
 
-    @Override
+    
     public TypeDefinitionContainer getTypeById(String repositoryId, String typeId, boolean includePropertyDefinitions,
             int depthParam) {
         int depth = depthParam;
@@ -244,7 +244,7 @@ public class StoreManagerImpl implements StoreManager {
         }
     }
 
-    @Override
+    
     public Collection<TypeDefinitionContainer> getTypeDefinitionList(String repositoryId,
             boolean includePropertyDefinitions) {
         TypeManager typeManager = fMapRepositoryToTypeManager.get(repositoryId);
@@ -255,7 +255,7 @@ public class StoreManagerImpl implements StoreManager {
         return typeColl;
     }
 
-    @Override
+    
     public List<TypeDefinitionContainer> getRootTypes(String repositoryId, boolean includePropertyDefinitions) {
         List<TypeDefinitionContainer> result;
         TypeManager typeManager = fMapRepositoryToTypeManager.get(repositoryId);
@@ -300,7 +300,7 @@ public class StoreManagerImpl implements StoreManager {
         return result;
     }
 
-    @Override
+    
     public RepositoryInfo getRepositoryInfo(String repositoryId) {
         ObjectStore sm = fMapRepositoryToObjectStore.get(repositoryId);
         if (null == sm) {
@@ -585,23 +585,23 @@ public class StoreManagerImpl implements StoreManager {
         return tdcClone;
     }
 
-    @Override
+    
     public TypeManager getTypeManager(String repositoryId) {
         TypeManager typeManager = fMapRepositoryToTypeManager.get(repositoryId);
         return typeManager;
     }
 
-    @Override
+    
     public boolean supportsSingleFiling(String repositoryId) {
         return false;
     }
 
-    @Override
+    
     public boolean supportsMultiFilings(String repositoryId) {
         return true;
     }
 
-    @Override
+    
     public ObjectList query(String user, String repositoryId, String statement, Boolean searchAllVersions,
             Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount) {

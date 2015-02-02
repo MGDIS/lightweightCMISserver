@@ -23,15 +23,8 @@ import java.util.List;
 
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.MultiFiling;
-import org.apache.chemistry.opencmis.utils.FilePersistence;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class FilingImpl extends StoredObjectImpl implements Fileable,
-        MultiFiling {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FilingImpl.class
-            .getName());
+public class FilingImpl extends StoredObjectImpl implements Fileable, MultiFiling {
 
     private List<String> parentIds = new ArrayList<String>(1);
 
@@ -39,39 +32,27 @@ public class FilingImpl extends StoredObjectImpl implements Fileable,
         super();
     }
 
-    @Override
+    
     public List<String> getParentIds() {
         return parentIds;
     }
 
-    @Override
+    
     public boolean hasParent() {
         return !(null == parentIds || parentIds.isEmpty());
     }
 
-    @Override
+    
     public String getPathSegment() {
-        StringBuilder stb = new StringBuilder();
-        if (hasParent()) {
-            String firstParentId = getParentIds().get(0);
-            if (firstParentId != null && !firstParentId.equals(FilePersistence.rootId) && getStore().hasObject(firstParentId)) {
-                String parentPathSegment = ((FolderImpl) getStore().getObjectById(firstParentId)).getPathSegment();
-                if (parentPathSegment != null) {
-                    stb.append(parentPathSegment);
-                    stb.append("/");
-                }
-            }
-        }
-        stb.append(super.getName());
-        return stb.toString();
+        return super.getName();
     }
 
-    @Override
+    
     public void addParentId(String parentId) {
         parentIds.add(parentId);
     }
 
-    @Override
+    
     public void removeParentId(String parentId) {
         parentIds.remove(parentId);
     }

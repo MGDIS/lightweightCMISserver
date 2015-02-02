@@ -2,11 +2,15 @@ package org.apache.chemistry.opencmis.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 
@@ -17,15 +21,21 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.apache.chemistry.opencmis.commons.impl.Base64;
+import org.apache.chemistry.opencmis.commons.impl.IOUtils;
 import org.apache.chemistry.opencmis.commons.impl.MimeTypes;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.Relationship;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.Version;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.VersionedDocument;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FilingImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
+import org.apache.chemistry.opencmis.inmemory.storedobj.impl.VersionedDocumentImpl;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +44,7 @@ public class FilePersistence implements IPersistenceManager {
     private static final Logger LOG = LoggerFactory
             .getLogger(FilePersistence.class.getName());
 
-    public static String rootId = "@root@";
+    private String rootId = "@root@";
 
     public FilePersistence() {
         
@@ -74,6 +84,17 @@ public class FilePersistence implements IPersistenceManager {
         }
     }
 
+    /**
+     * Returns the File object by id or throws an appropriate exception.
+     */
+    public File getFile(StoredObject so) {
+        try {
+            return idToFile(getId(so));
+        } catch (Exception e) {
+            throw new CmisObjectNotFoundException(e.getMessage(), e);
+        }
+    }
+    
     /**
      * Returns the metadataFile from objectId
      * 
@@ -126,10 +147,11 @@ public class FilePersistence implements IPersistenceManager {
 
         InputStream stream = null;
         try {
-            stream = new ByteArrayInputStream(
-                    org.apache.commons.io.FileUtils.readFileToByteArray(file));
+        	stream = new FileInputStream(file);
+            //stream = new ByteArrayInputStream(
+            //        org.apache.commons.io.FileUtils.readFileToByteArray(file));
 
-            LOG.debug("Read content from " + file.getAbsolutePath());
+            LOG.info("Read content from " + file.getAbsolutePath());
             // stream = new BufferedInputStream(new FileInputStream(file),
             // BUFFER_SIZE);
             // stream.close();
@@ -152,23 +174,24 @@ public class FilePersistence implements IPersistenceManager {
     /**
      * Writes the content to disc.
      */
-    public void writeContent(File newFile, InputStream stream) {
+    @SuppressWarnings("resource")
+	public int writeContent(File newFile, InputStream stream) {
 
         if (root == null)
-            return;
+            return 0;
 
-        OutputStream os;
         try {
-            os = new FileOutputStream(newFile);
-            org.apache.commons.io.IOUtils.copy(stream, os);
-            os.close();
-            LOG.debug("Write content in "+newFile.getAbsolutePath());
-        } catch (IOException e) {
+        	int length = stream.available();
+        	//FileUtils.copyInputStreamToFile(stream, newFile);
+		    Files.copy(stream, Paths.get(newFile.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+            LOG.info("Write content in "+newFile.getAbsolutePath());
+            return length;
+		} catch (IOException e) {
             throw new CmisStorageException("Could not write content in "
                     + newFile + ": " + e.getMessage(), e);
         }
     }
-
+    
     /**
      * Returns the id of stored object
      */
@@ -178,8 +201,8 @@ public class FilePersistence implements IPersistenceManager {
                 return rootId;
             }
             if (so instanceof Fileable) {
-                String pathSegment = ((Fileable) so).getPathSegment();
-                return fileToId(new File(getRootPath(), pathSegment));
+                return fileToId(new File(getRootPath(),
+                        ((Fileable) so).getPathSegment()));
             } else {
                 return fileToId(new File(getRootPath(), so.getName()));
             }
@@ -247,7 +270,7 @@ public class FilePersistence implements IPersistenceManager {
                     metadataFile), json.toString());
             // out.print(json);
             // out.flush();
-            LOG.debug("Writing metadata in " + metadataFile);
+            LOG.info("Writing metadata in " + metadataFile);
         } catch (IOException e) {
             throw new CmisStorageException("Could not write metadata: "
                     + e.getMessage(), e);
@@ -271,7 +294,7 @@ public class FilePersistence implements IPersistenceManager {
             storedObjectStr = org.apache.commons.io.FileUtils
                     .readFileToString(metadataFile);
 
-            LOG.debug("Read metadata from " + metadataFile.getAbsolutePath());
+            LOG.info("Read metadata from " + metadataFile.getAbsolutePath());
             // storedObjectStr = readAllLines(new FileReader(file));
         } catch (IOException e) {
             LOG.warn("When filtering with metadata", e);
@@ -315,7 +338,7 @@ public class FilePersistence implements IPersistenceManager {
             if (file.list().length == 0) {
 
                 file.delete();
-                LOG.debug("Directory is deleted : " + file.getAbsolutePath());
+                LOG.info("Directory is deleted : " + file.getAbsolutePath());
 
             } else {
 
@@ -333,7 +356,7 @@ public class FilePersistence implements IPersistenceManager {
                 // check the directory again, if empty then delete it
                 if (file.list().length == 0) {
                     file.delete();
-                    LOG.debug("Directory is deleted : "
+                    LOG.info("Directory is deleted : "
                             + file.getAbsolutePath());
                 }
             }
@@ -341,7 +364,7 @@ public class FilePersistence implements IPersistenceManager {
         } else {
             // if file, then delete it
             file.delete();
-            LOG.debug("File is deleted : " + file.getAbsolutePath());
+            LOG.info("File is deleted : " + file.getAbsolutePath());
         }
     }
 
@@ -386,11 +409,16 @@ public class FilePersistence implements IPersistenceManager {
     public void saveObject(Map<String, StoredObject> storedObjectMap,
             StoredObject so, boolean withContent) {
         String path = "";
-        if (so instanceof Fileable && null != ((Fileable) so).getParentIds()
-                && ((Fileable) so).getParentIds().size() > 0) {
-            String parent = getFullPath(storedObjectMap, ((Fileable) so)
-                    .getParentIds().get(0));
-            path = parent;
+        if (so instanceof Fileable && null != ((Fileable) so).getParentIds()) {
+            if (((Fileable) so).getParentIds().size() > 0) {
+         	   String parent = getFullPath(storedObjectMap, ((Fileable) so)
+                 .getParentIds().get(0));
+         	   path = parent;
+            } else {
+         	   path = getRootPath();
+            }
+        } else if(so instanceof Relationship){
+        	path = getRootPath();
         }
 
         // check the file
@@ -422,11 +450,8 @@ public class FilePersistence implements IPersistenceManager {
                 // write content, if available
                 if (contentStream != null && contentStream.getStream() != null) {
                     writeContent(newFile, contentStream.getStream());
-                    // remove content from so
-                    ((DocumentImpl) so).setContent(null);
                 }
             }
-
             // save properties
             writeCMISToDisc(newFile, so);
         }

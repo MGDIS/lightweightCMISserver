@@ -23,6 +23,7 @@ package org.apache.chemistry.opencmis.inmemory.storedobj.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -33,6 +34,7 @@ import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.LastModifiedContentStream;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
+import org.apache.chemistry.opencmis.utils.IPersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,8 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
     private final long sizeLimitKB;
     
     private final boolean doNotStoreContent;
+
+    private IPersistenceManager persistence;
 
     private static synchronized long getTotalLength() {
         return totalLength;
@@ -104,26 +108,30 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
             fContent = null; // delete content
             fLength = 0;
         } else {
-            byte[] buffer = new byte[BUFFER_SIZE];
-            ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
-            int len = in.read(buffer);
-            while (len != -1) {
-                if (!doNotStoreContent) {
-                    contentStream.write(buffer, 0, len);
-                }
-                fLength += len;
-                if (sizeLimitKB > 0 && fLength > sizeLimitKB * SIZE_KB) {
-                    throw new CmisInvalidArgumentException("Content size exceeds max. allowed size of " + sizeLimitKB
-                            + "KB.");
-                }
-                len = in.read(buffer);
-            }
-            if (!doNotStoreContent) {
-                fContent = contentStream.toByteArray();
-                fLength = contentStream.size();
-            }
-            contentStream.close();
-            in.close();
+        	if (persistence != null) {
+        		fLength = persistence.writeContent(new File(getFilename()), in);
+        	} else  {
+        		byte[] buffer = new byte[BUFFER_SIZE];
+	        	ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
+	            int len = in.read(buffer);
+	            while (len != -1) {
+	                if (!doNotStoreContent) {
+	                    contentStream.write(buffer, 0, len);
+	                }
+	                fLength += len;
+	                if (sizeLimitKB > 0 && fLength > sizeLimitKB * SIZE_KB) {
+	                    throw new CmisInvalidArgumentException("Content size exceeds max. allowed size of " + sizeLimitKB
+	                            + "KB.");
+	                }
+	                len = in.read(buffer);
+	            }
+	            if (!doNotStoreContent) {
+	                fContent = contentStream.toByteArray();
+	                fLength = contentStream.size();
+	            }
+	            contentStream.close();
+	            in.close();
+        	}
         }
         increaseTotalLength(fLength);
         increaseTotalCalls();
@@ -169,17 +177,17 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
         LOG.debug("setting content stream, new size total " + (getTotalLength() / (SIZE_KB * SIZE_KB)) + "MB.");
     }
 
-    @Override
+    
     public long getLength() {
         return fLength;
     }
 
-    @Override
+    
     public BigInteger getBigLength() {
         return BigInteger.valueOf(fLength);
     }
 
-    @Override
+    
     public String getMimeType() {
         return fMimeType;
     }
@@ -188,7 +196,7 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
         this.fMimeType = mimeType;
     }
 
-    @Override
+    
     public String getFileName() {
         return fFileName;
     }
@@ -201,14 +209,15 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
         return fFileName;
     }
 
-    @Override
+    
     public InputStream getStream() {
         if (doNotStoreContent) {
             return new RandomInputStream(fLength);
         }
         
         if (null == fContent) {
-            return null;
+        	if (fLength == 0) return null;
+        	else return persistence.readContent(new File(getFilename())).getStream();
         } else if (fStreamLimitOffset <= 0 && fStreamLimitLength < 0) {
                 return new ByteArrayInputStream(fContent);
         } else {            
@@ -221,7 +230,7 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
         this.fLastModified = lastModified;
     }
 
-    @Override
+    
     public GregorianCalendar getLastModified() {
         return fLastModified;
     }
@@ -242,13 +251,17 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
         return fContent;
     }
 
-    @Override
+    
     public List<CmisExtensionElement> getExtensions() {
         return null;
     }
 
-    @Override
+    
     public void setExtensions(List<CmisExtensionElement> extensions) {
         // not implemented
+    }
+
+    public void setPersistencemanager(IPersistenceManager persistence) {
+    	this.persistence = persistence;
     }
 }

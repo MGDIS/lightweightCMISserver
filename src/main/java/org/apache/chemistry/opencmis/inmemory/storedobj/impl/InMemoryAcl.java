@@ -34,7 +34,7 @@ public class InMemoryAcl implements Cloneable {
 
     private static class AceComparator<T extends InMemoryAce> implements Comparator<T> {
 
-        @Override
+        
         public int compare(T o1, T o2) {
             if (null == o1 || null == o2) {
                 if (o1 == o2) { // NOSONAR
@@ -201,7 +201,7 @@ public class InMemoryAcl implements Cloneable {
         return acl.size();
     }
 
-    @Override
+    
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -209,7 +209,7 @@ public class InMemoryAcl implements Cloneable {
         return result;
     }
 
-    @Override
+    
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -231,7 +231,7 @@ public class InMemoryAcl implements Cloneable {
         return true;
     }
 
-    @Override
+    
     public String toString() {
         return "InMemoryAcl [acl=" + acl + "]";
     }
@@ -254,7 +254,7 @@ public class InMemoryAcl implements Cloneable {
         return new AccessControlListImpl(commonsAcl);
     }
 
-    @Override
+    
     public InMemoryAcl clone() throws CloneNotSupportedException {
         InMemoryAcl newAcl = new InMemoryAcl(acl);
         return newAcl;

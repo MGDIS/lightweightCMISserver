@@ -39,12 +39,12 @@ public class PolicyImpl extends StoredObjectImpl implements Policy {
         policyText = text;
     }
 
-    @Override
+    
     public String getPolicyText() {
         return policyText;
     }
 
-    @Override
+    
     public void fillProperties(Map<String, PropertyData<?>> properties, BindingsObjectFactory objFactory,
             List<String> requestedIds) {
 

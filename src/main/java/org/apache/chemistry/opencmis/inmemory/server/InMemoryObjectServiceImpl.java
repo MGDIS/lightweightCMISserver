@@ -868,7 +868,7 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
 
             TypeValidator.validateAllowedChildObjectTypes(typeDef, folder.getAllowedChildObjectTypeIds());
         }
-        
+
         // check if the given type is a document type
         if (!typeDef.getBaseTypeId().equals(BaseTypeId.CMIS_DOCUMENT)) {
             throw new CmisInvalidArgumentException("Cannot create a document, with a non-document type: "
@@ -936,7 +936,7 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
             createdDoc = doc;
             createdDoc.setStore(objectStore);
         }
-        
+
         return createdDoc;
     }
 
@@ -1195,7 +1195,7 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
 
         // Now we are sure to have document type definition:
         item = objectStore.createItem(name, propMapNew, user, folder, policies, aclAdd, aclRemove);
-        
+
         // add store
         item.setStore(objectStore);
         return item;

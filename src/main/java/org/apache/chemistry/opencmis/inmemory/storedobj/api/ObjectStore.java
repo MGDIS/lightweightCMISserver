@@ -577,13 +577,6 @@ public interface ObjectStore {
      * @return current persistence manager
      */
     IPersistenceManager getPersistenceManager();
-    
-    /**
-     * True if objectId exists
-     * @param objectId
-     * @return
-     */
-    boolean hasObject(String objectId);
 
 }
 

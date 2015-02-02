@@ -50,10 +50,12 @@ import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Ignore
 public class VersioningTest extends AbstractServiceTest {
     private static final Logger log = LoggerFactory.getLogger(ObjectServiceTest.class);
     private static final String PROP_VALUE = "Mickey Mouse";

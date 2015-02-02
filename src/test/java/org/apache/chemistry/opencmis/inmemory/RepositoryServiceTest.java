@@ -41,10 +41,12 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
 import org.apache.chemistry.opencmis.inmemory.types.DocumentTypeCreationHelper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Ignore
 public class RepositoryServiceTest extends AbstractServiceTest {
 
     // private CmisProvider fProvider;

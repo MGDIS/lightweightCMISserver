@@ -63,7 +63,6 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.api.Relationship;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.VersionedDocument;
 import org.apache.chemistry.opencmis.inmemory.types.DefaultTypeSystemCreator;
-import org.apache.chemistry.opencmis.utils.FilePersistence;
 import org.apache.chemistry.opencmis.utils.IPersistenceManager;
 import org.apache.chemistry.opencmis.utils.InMemoryPersistence;
 import org.slf4j.Logger;
@@ -163,12 +162,12 @@ public class ObjectStoreImpl implements ObjectStore {
         fLock.unlock();
     }
 
-    @Override
+    
     public Folder getRootFolder() {
         return fRootFolder;
     }
 
-    @Override
+    
     public StoredObject getObjectByPath(String path, String user) {
         StoredObject so = findObjectWithPathInDescendents(path, user, Filing.PATH_SEPARATOR, fRootFolder);
         return so;
@@ -195,14 +194,14 @@ public class ObjectStoreImpl implements ObjectStore {
         return null;
     }
 
-    @Override
+    
     public StoredObject getObjectById(String objectId) {
         // we use path as id so we just can look it up in the map
         StoredObject so = fStoredObjectMap.get(objectId);
         return so;
     }
 
-    @Override
+    
     public void deleteObject(String objectId, Boolean allVersions, String user) {
         StoredObject obj = fStoredObjectMap.get(objectId);
 
@@ -282,7 +281,7 @@ public class ObjectStoreImpl implements ObjectStore {
     /**
      * Clear repository and remove all data.
      */
-    @Override
+    
     public void clear() {
         lock();
         fStoredObjectMap.clear();
@@ -290,7 +289,7 @@ public class ObjectStoreImpl implements ObjectStore {
         unlock();
     }
 
-    @Override
+    
     public long getObjectCount() {
         return fStoredObjectMap.size();
     }
@@ -314,11 +313,12 @@ public class ObjectStoreImpl implements ObjectStore {
         fRootFolder = rootFolder;
     }
 
-    @Override
+    
     public Document createDocument(Map<String, PropertyData<?>> propMap, String user, Folder folder,
             ContentStream contentStream, List<String> policies, Acl addACEs, Acl removeACEs) {
         String name = (String) propMap.get(PropertyIds.NAME).getFirstValue();
         DocumentImpl doc = new DocumentImpl();
+        doc.setStore(this);
         doc.createSystemBasePropertiesWhenCreated(propMap, user);
         doc.setCustomProperties(propMap);
         doc.setRepositoryId(fRepositoryId);
@@ -343,7 +343,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return doc;
     }
 
-    @Override
+    
     public StoredObject createItem(String name, Map<String, PropertyData<?>> propMap, String user, Folder folder,
             List<String> policies, Acl addACEs, Acl removeACEs) {
         ItemImpl item = new ItemImpl();
@@ -369,7 +369,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return item;
     }
 
-    @Override
+    
     public DocumentVersion createVersionedDocument(String name, Map<String, PropertyData<?>> propMap, String user,
             Folder folder, List<String> policies, Acl addACEs, Acl removeACEs, ContentStream contentStream,
             VersioningState versioningState) {
@@ -404,7 +404,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return version;
     }
 
-    @Override
+    
     public Folder createFolder(String name, Map<String, PropertyData<?>> propMap, String user, Folder parent,
             List<String> policies, Acl addACEs, Acl removeACEs) {
 
@@ -439,7 +439,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return folder;
     }
 
-    @Override
+    
     public StoredObject createPolicy(String name, String policyText, Map<String, PropertyData<?>> propMap, String user,
             Acl addACEs, Acl removeACEs) {
         PolicyImpl policy = new PolicyImpl();
@@ -454,7 +454,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return policy;
     }
 
-    @Override
+    
     public StoredObject createRelationship(String name, StoredObject sourceObject, StoredObject targetObject,
             Map<String, PropertyData<?>> propMap, String user, Acl addACEs, Acl removeACEs) {
 
@@ -475,13 +475,13 @@ public class ObjectStoreImpl implements ObjectStore {
         return rel;
     }
 
-    @Override
+    
     public void storeVersion(DocumentVersion version) {
         String id = storeObject(version);
         version.setId(id);
     }
 
-    @Override
+    
     public void deleteVersion(DocumentVersion version) {
         StoredObject found = fStoredObjectMap.remove(version.getId());
 
@@ -491,7 +491,7 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
 
-    @Override
+    
     public void updateObject(StoredObject so, Map<String, PropertyData<?>> newProperties, String user) {
         // nothing to do
         Map<String, PropertyData<?>> properties = so.getProperties();
@@ -514,7 +514,7 @@ public class ObjectStoreImpl implements ObjectStore {
         persistenceManager.saveObject(fStoredObjectMap, so, false);
     }
 
-    @Override
+    
     public List<StoredObject> getCheckedOutDocuments(String orderBy, String user,
             IncludeRelationships includeRelationships) {
         List<StoredObject> res = new ArrayList<StoredObject>();
@@ -531,7 +531,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return res;
     }
 
-    @Override
+    
     public List<StoredObject> getRelationships(String objectId, List<String> typeIds, RelationshipDirection direction) {
 
         List<StoredObject> res = new ArrayList<StoredObject>();
@@ -559,7 +559,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return res;
     }
 
-    @Override
+    
     public String getFolderPath(String folderId) {
         StringBuilder sb = new StringBuilder();
         insertPathSegment(sb, folderId);
@@ -579,7 +579,7 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
 
-    @Override
+    
     public Acl applyAcl(StoredObject so, Acl addAces, Acl removeAces, AclPropagation aclPropagation, 
             String principalId) {
         if (aclPropagation == AclPropagation.OBJECTONLY || !(so instanceof Folder)) {
@@ -589,7 +589,7 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
 
-    @Override
+    
     public Acl applyAcl(StoredObject so, Acl acl, AclPropagation aclPropagation, String principalId) {
         if (aclPropagation == AclPropagation.OBJECTONLY || !(so instanceof Folder)) {
             return applyAcl(so, acl);
@@ -608,7 +608,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return acls;
     }
 
-    @Override
+    
     public Acl getAcl(int aclId) {
         InMemoryAcl acl = getInMemoryAcl(aclId);
         return acl == null ? InMemoryAcl.getDefaultAcl().toCommonsAcl() : acl.toCommonsAcl();
@@ -700,7 +700,7 @@ public class ObjectStoreImpl implements ObjectStore {
 		persistenceManager.deleteFromDisk(folder);
     }
 
-    @Override
+    
     public ChildrenResult getChildren(Folder folder, int maxItemsParam, int skipCountParam, String user, 
             boolean usePwc) {
         List<Fileable> children = getChildren(folder, user, usePwc);
@@ -750,7 +750,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return children;
     }
 
-    @Override
+    
     public ChildrenResult getFolderChildren(Folder folder, int maxItems, int skipCount, String user) {
         List<Fileable> folderChildren = new ArrayList<Fileable>();
         for (String id : getIds()) {
@@ -772,7 +772,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return new ChildrenResult(folderChildren, noItems);
     }
 
-    @Override
+    
     public void move(StoredObject so, Folder oldParent, Folder newParent, String user) {
         try {
             if (hasChild(newParent, so.getName())) {
@@ -792,7 +792,7 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
 
-    @Override
+    
     public void rename(StoredObject so, String newName, String user) {
         try {
             lock();
@@ -824,7 +824,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return false;
     }
 
-    @Override
+    
     public List<String> getParentIds(StoredObject so, String user) {
         List<String> visibleParents = new ArrayList<String>();
         if (!(so instanceof Fileable)) {
@@ -1010,7 +1010,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return res;
     }
 
-    @Override
+    
     public boolean isTypeInUse(String typeId) {
         // iterate over all the objects and check for each if the type matches
         for (String objectId : getIds()) {
@@ -1022,7 +1022,7 @@ public class ObjectStoreImpl implements ObjectStore {
         return false;
     }
 
-    @Override
+    
     public void addParent(StoredObject so, Folder parent) {
         try {
             lock();
@@ -1043,7 +1043,7 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
 
-    @Override
+    
     public void removeParent(StoredObject so, Folder parent) {
         try {
             lock();
@@ -1072,7 +1072,7 @@ public class ObjectStoreImpl implements ObjectStore {
         // TODO evaluate orderBy, for now sort by path segment
         class FolderComparator implements Comparator<StoredObject> {
 
-            @Override
+            
             public int compare(StoredObject f1, StoredObject f2) {
                 String segment1 = f1.getName();
                 String segment2 = f2.getName();
@@ -1084,22 +1084,15 @@ public class ObjectStoreImpl implements ObjectStore {
         Collections.sort(list, new FolderComparator());
     }
 
-    @Override
+    
     public ContentStream getContent(StoredObject so, long offset, long length) {
         if (so instanceof Content) {
             Content content = (Content) so;
             ContentStream contentStream = content.getContent();
-            if (null == contentStream) {
-                // get contentStream from persistence
-                if (so.getId().length() > 3) {
-                    // base64 encoded id
-                    return this.persistenceManager.readContent(this.persistenceManager.getFile(so.getId()));
-                }
-                else {
-                    return null;
-                }
+            if (null == contentStream && so.getId().length() <= 3) {
+            	return null;
             } else if (offset <= 0 && length < 0) {
-                return contentStream;
+                return this.persistenceManager.readContent(this.persistenceManager.getFile(so.getId()));
             } else {
                 return ((ContentStreamDataImpl)contentStream).getCloneWithLimits(offset, length);
             }
@@ -1108,7 +1101,7 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
 
-    @Override
+    
     public ContentStream setContent(StoredObject so, ContentStream contentStream) {
         if (so instanceof Content) {
             ContentStreamDataImpl newContent;
@@ -1123,6 +1116,9 @@ public class ObjectStoreImpl implements ObjectStore {
                 if (null == fileName || fileName.length() <= 0) {
                     fileName = so.getName(); // use name of document as fallback
                 }
+             // add directories to fileName
+                fileName = so.getStore().getPersistenceManager().getFile(so).getAbsolutePath();
+                newContent.setPersistencemanager(so.getStore().getPersistenceManager());
                 newContent.setFileName(fileName);
                 String mimeType = contentStream.getMimeType();
                 if (null == mimeType || mimeType.length() <= 0) {
@@ -1144,7 +1140,7 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
 
-    @Override
+    
     public void appendContent(StoredObject so, ContentStream contentStream) {
         if (so instanceof Content) {
             Content content = (Content) so;
@@ -1164,24 +1160,20 @@ public class ObjectStoreImpl implements ObjectStore {
         }
     }
     
-    @Override
+    
     public List<RenditionData> getRenditions(StoredObject so, String renditionFilter, long maxItems, long skipCount) {
 
         return RenditionUtil.getRenditions(so, renditionFilter, maxItems, skipCount);
     }
 
-    @Override
+    
     public ContentStream getRenditionContent(StoredObject so, String streamId, long offset, long length) {
         return RenditionUtil.getRenditionContent(so, streamId, offset, length);
     }
 
-    @Override
+    
     public IPersistenceManager getPersistenceManager() {
         return persistenceManager;
-    }
-    
-    public boolean hasObject(String objectId){
-        return fStoredObjectMap.containsKey(objectId);
     }
 
 }

@@ -45,17 +45,17 @@ public class DocumentImpl extends FilingImpl implements Document {
         super();
     }
 
-    @Override
+    
     public ContentStream getContent() {
         return fContent;
     }
 
-    @Override
+    
     public void setContent(ContentStream content) {
         fContent = content;
     }
 
-    @Override
+    
     public void fillProperties(Map<String, PropertyData<?>> properties, BindingsObjectFactory objFactory,
             List<String> requestedIds) {
 
@@ -137,12 +137,12 @@ public class DocumentImpl extends FilingImpl implements Document {
 
     }
 
-    @Override
+    
     public boolean hasContent() {
         return null != fContent;
     }
     
-    @Override
+    
     public boolean hasRendition(String user) {
         return RenditionUtil.hasRendition(this, user);
     }

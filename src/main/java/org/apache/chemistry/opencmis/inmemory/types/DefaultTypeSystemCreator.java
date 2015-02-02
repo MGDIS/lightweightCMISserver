@@ -63,7 +63,7 @@ public class DefaultTypeSystemCreator implements TypeCreator {
      * the required types for testing.
      * @see org.apache.chemistry.opencmis.inmemory.TypeCreator#createTypesList()
      */
-    @Override
+    
     public List<TypeDefinition> createTypesList() {
         return SINGLETON_TYPES;
     }

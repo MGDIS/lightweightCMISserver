@@ -225,7 +225,6 @@ public abstract class AbstractQueryConditionProcessor implements PredicateWalker
     protected abstract void onTextPhrase(String phrase);
 
     // Base interface called from query parser
-    @Override
     public Boolean walkPredicate(Tree whereNode) {
         if (null != whereNode) {
             onStartProcessing(whereNode);

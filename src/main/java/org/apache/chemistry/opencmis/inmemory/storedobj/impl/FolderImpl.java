@@ -32,7 +32,6 @@ import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.inmemory.FilterParser;
 import org.apache.chemistry.opencmis.inmemory.NameValidator;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
-import org.apache.chemistry.opencmis.utils.FilePersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +49,7 @@ public class FolderImpl extends StoredObjectImpl implements Folder {
         init(name, parentId);
     }
 
-    @Override
+    
     public void fillProperties(Map<String, PropertyData<?>> properties, BindingsObjectFactory objFactory,
             List<String> requestedIds) {
 
@@ -70,18 +69,18 @@ public class FolderImpl extends StoredObjectImpl implements Folder {
 
     }
 
-    @Override
+    
     public List<String> getAllowedChildObjectTypeIds() {
         // TODO implement this.
         return null;
     }
 
-    @Override
+    
     public boolean hasRendition(String user) {
         return true;
     }
 
-    @Override
+    
     public List<String> getParentIds() {
         if (parentId == null) {
             return Collections.emptyList();
@@ -90,35 +89,22 @@ public class FolderImpl extends StoredObjectImpl implements Folder {
         }
     }
 
-    @Override
+    
     public boolean hasParent() {
         return null != parentId;
     }
 
-    @Override
+    
     public String getParentId() {
         return parentId;
     }
 
-    @Override
+    
     public String getPathSegment() {
-        StringBuilder stb = new StringBuilder();
-        if (hasParent()) {
-            String firstParentId = getParentIds().get(0);
-            if (firstParentId != null && !firstParentId.equals(FilePersistence.rootId) && getStore().hasObject(firstParentId)) {
-                String parentPathSegment = ((FolderImpl) getStore().getObjectById(firstParentId)).getPathSegment();
-                if (parentPathSegment != null) {
-                    stb.append(parentPathSegment);
-                    stb.append("/");
-                }
-            }
-        }
-        if (super.getName() == null) return null;
-        stb.append(super.getName());
-        return stb.toString();
+        return getName();
     }
 
-    @Override
+    
     public void setParentId(String parentId) {
         this.parentId = parentId;
     }

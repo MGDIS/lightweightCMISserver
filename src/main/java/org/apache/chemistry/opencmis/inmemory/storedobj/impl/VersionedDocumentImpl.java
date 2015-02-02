@@ -46,7 +46,7 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         fIsCheckedOut = false;
     }
 
-    @Override
+    
     public DocumentVersion addVersion(VersioningState verState, String user) {
 
         if (isCheckedOut()) {
@@ -66,7 +66,7 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         return ver;
     }
 
-    @Override
+    
     public boolean deleteVersion(DocumentVersion version) {
         if (fIsCheckedOut) {
             // Note: Do not throw an exception here if the document is
@@ -87,12 +87,12 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         return !fVersions.isEmpty();
     }
 
-    @Override
+    
     public void cancelCheckOut(String user) {
         cancelCheckOut(true);
     }
 
-    @Override
+    
     public void checkIn(boolean isMajor, Properties properties, ContentStream content, String checkinComment,
             List<String> policyIds, String user) {
         if (fIsCheckedOut) {
@@ -125,7 +125,7 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         }
     }
 
-    @Override
+    
     public DocumentVersion checkOut(String user) {
         if (fIsCheckedOut) {
             throw new CmisConstraintException("Error: Can't checkout, Document " + getId() 
@@ -138,12 +138,12 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         return pwc;
     }
 
-    @Override
+    
     public List<DocumentVersion> getAllVersions() {
         return fVersions;
     }
 
-    @Override
+    
     public DocumentVersion getLatestVersion(boolean major) {
 
         DocumentVersion latest = null;
@@ -176,17 +176,17 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         return latest;
     }
 
-    @Override
+    
     public boolean isCheckedOut() {
         return fIsCheckedOut;
     }
 
-    @Override
+    
     public String getCheckedOutBy() {
         return fCheckedOutUser;
     }
 
-    @Override
+    
     public DocumentVersion getPwc() {
         for (DocumentVersion ver : fVersions) {
             if (ver.isPwc()) {
@@ -196,7 +196,7 @@ public class VersionedDocumentImpl extends FilingImpl implements VersionedDocume
         return null;
     }
 
-    @Override
+    
     public void fillProperties(Map<String, PropertyData<?>> properties, BindingsObjectFactory objFactory,
             List<String> requestedIds) {
 

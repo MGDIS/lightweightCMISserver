@@ -15,11 +15,13 @@ public interface IPersistenceManager {
 
     public File getFile(String id);
 
+    public File getFile(StoredObject so);
+    
     public File getMetadataFile(String id);
 
     public ContentStream readContent(File file);
 
-    public void writeContent(File newFile, InputStream stream);
+    public int writeContent(File newFile, InputStream stream);
 
     public String getId(StoredObject so);
 

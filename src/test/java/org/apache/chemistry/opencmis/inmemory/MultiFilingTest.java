@@ -38,16 +38,17 @@ import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNameConstraintViolationException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.inmemory.types.DocumentTypeCreationHelper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Ignore
 public class MultiFilingTest extends AbstractServiceTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(MultiFilingTest.class);
@@ -231,7 +232,7 @@ public class MultiFilingTest extends AbstractServiceTest {
         for (ObjectParentData opd : res) {
             assertTrue(folderIds.contains(opd.getObject().getId()));
             assertEquals(BaseTypeId.CMIS_FOLDER, opd.getObject().getBaseTypeId());
-            assertTrue(opd.getRelativePathSegment().endsWith(UNFILED_DOC_NAME));
+            assertEquals(UNFILED_DOC_NAME, opd.getRelativePathSegment());
         }
 
         // try version specific filing, should fail

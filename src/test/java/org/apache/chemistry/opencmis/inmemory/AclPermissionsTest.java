@@ -41,10 +41,12 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.impl.InMemoryAce;
 import org.apache.chemistry.opencmis.server.support.query.CalendarHelper;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Ignore
 @SuppressWarnings("unused")
 public class AclPermissionsTest extends AbstractServiceTest {
 

@@ -67,6 +67,8 @@ public class StoredObjectImpl implements StoredObject {
     protected List<String> secondaryTypeIds; // CMIS 1.1
     protected List<String> policyIds;
 
+    private ObjectStore store;
+    
     StoredObjectImpl() { // visibility should be package
         GregorianCalendar now = getNow();
         now.setTime(new Date());
@@ -76,92 +78,92 @@ public class StoredObjectImpl implements StoredObject {
         policyIds = null;
     }
 
-    @Override
+    
     public String getId() {
         return fId;
     }
 
-    @Override
+    
     public void setId(String id) {
         fId = id;
     }
 
-    @Override
+    
     public String getName() {
         return fName;
     }
 
-    @Override
+    
     public void setName(String name) {
         fName = name;
     }
 
-    @Override
+    
     public String getTypeId() {
         return fTypeId;
     }
 
-    @Override
+    
     public void setTypeId(String type) {
         fTypeId = type;
     }
 
-    @Override
+    
     public String getCreatedBy() {
         return fCreatedBy;
     }
 
-    @Override
+    
     public void setCreatedBy(String createdBy) {
         this.fCreatedBy = createdBy;
     }
 
-    @Override
+    
     public String getModifiedBy() {
         return fModifiedBy;
     }
 
-    @Override
+    
     public void setModifiedBy(String modifiedBy) {
         this.fModifiedBy = modifiedBy;
     }
 
-    @Override
+    
     public GregorianCalendar getCreatedAt() {
         return fCreatedAt;
     }
 
-    @Override
+    
     public void setCreatedAt(GregorianCalendar createdAt) {
         this.fCreatedAt = createdAt;
     }
 
-    @Override
+    
     public GregorianCalendar getModifiedAt() {
         return fModifiedAt;
     }
 
-    @Override
+    
     public void setModifiedAtNow() {
         this.fModifiedAt = getNow();
     }
 
-    @Override
+    
     public void setModifiedAt(GregorianCalendar cal) {
         this.fModifiedAt = cal;
     }
 
-    @Override
+    
     public void setRepositoryId(String repositoryId) {
         fRepositoryId = repositoryId;
     }
 
-    @Override
+    
     public String getRepositoryId() {
         return fRepositoryId;
     }
 
-    @Override
+    
     public List<String> getAppliedPolicies() {
         if (null == policyIds) {
             return null;
@@ -181,7 +183,7 @@ public class StoredObjectImpl implements StoredObject {
         }
     }
 
-    @Override
+    
     public void addAppliedPolicy(String policyId) {
         if (null == policyIds) {
             policyIds = new ArrayList<String>();
@@ -191,7 +193,7 @@ public class StoredObjectImpl implements StoredObject {
         }
     }
 
-    @Override
+    
     public void removePolicy(String policyId) {
         if (null != policyIds && policyIds.contains(policyId)) {
             policyIds.remove(policyId);
@@ -202,50 +204,50 @@ public class StoredObjectImpl implements StoredObject {
     }
 
     // CMIS 1.1:
-    @Override
+    
     public void setDescription(String descr) {
         description = descr;
     }
 
     // CMIS 1.1:
-    @Override
+    
     public String getDescription() {
         return description;
     }
 
-    @Override
+    
     public List<String> getSecondaryTypeIds() {
         return Collections.unmodifiableList(secondaryTypeIds);
     }
 
-    @Override
+    
     public void setProperties(Map<String, PropertyData<?>> props) {
         fProperties = props;
     }
 
-    @Override
+    
     public Map<String, PropertyData<?>> getProperties() {
         return fProperties;
     }
 
-    @Override
+    
     public String getChangeToken() {
         GregorianCalendar lastModified = getModifiedAt();
         String token = Long.valueOf(lastModified.getTimeInMillis()).toString();
         return token;
     }
 
-    @Override
+    
     public void createSystemBasePropertiesWhenCreated(Map<String, PropertyData<?>> properties, String user) {
         addSystemBaseProperties(properties, user, true);
     }
 
-    @Override
+    
     public void updateSystemBasePropertiesWhenModified(Map<String, PropertyData<?>> properties, String user) {
         addSystemBaseProperties(properties, user, false);
     }
 
-    @Override
+    
     public void fillProperties(Map<String, PropertyData<?>> properties, BindingsObjectFactory objFactory,
             List<String> requestedIds) {
 
@@ -307,7 +309,7 @@ public class StoredObjectImpl implements StoredObject {
     // ///////////////////////////////////////////
     // private helper methods
 
-    @Override
+    
     public void setCustomProperties(Map<String, PropertyData<?>> properties) {
         Map<String, PropertyData<?>> propertiesNew = new HashMap<String, PropertyData<?>>(properties);
         // get a writablecollection
@@ -485,7 +487,7 @@ public class StoredObjectImpl implements StoredObject {
         }
     }
 
-    @Override
+    
     public int getAclId() {
         return fAclId;
     }
@@ -494,13 +496,13 @@ public class StoredObjectImpl implements StoredObject {
         fAclId = aclId;
     }
 
-    @Override
+    
     public AllowableActions getAllowableActions(String user) {
         AllowableActions actions = DataObjectCreator.fillAllowableActions(this, user);
         return actions;
     }
 
-    @Override
+    
     public boolean hasRendition(String user) {
         return false;
     }
@@ -545,14 +547,15 @@ public class StoredObjectImpl implements StoredObject {
         }
         return false;
     }
-    
-    private ObjectStore store;
-    public void setStore(ObjectStore store){
-        this.store = store;
-    }
-    
-    public ObjectStore getStore(){
-        return store;
-    }
+
+	
+	public void setStore(ObjectStore store) {
+		this.store = store;
+	}
+
+	
+	public ObjectStore getStore() {
+		return store;
+	}
 
 }

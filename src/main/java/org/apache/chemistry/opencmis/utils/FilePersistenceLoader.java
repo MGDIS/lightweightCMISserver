@@ -38,7 +38,7 @@ public class FilePersistenceLoader {
         }
 
         FilenameFilter filenameFilter = new FilenameFilter() {
-            @Override
+            
             public boolean accept(File dir, String name) {
                 return !name.endsWith(SUFFIXE_METADATA);
             }
@@ -91,9 +91,8 @@ public class FilePersistenceLoader {
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
                     so.setTypeId(BaseTypeId.CMIS_DOCUMENT.value());
                 }
-                // no content in memory
-                //((DocumentImpl) so).setContent(persistenceManager
-                //        .readContent(child));
+                // read contentStream
+                ((DocumentImpl) so).setContent(persistenceManager.readContent(child));
                 so.setRepositoryId(repositoryId);
                 so.setStore(store);
             }
