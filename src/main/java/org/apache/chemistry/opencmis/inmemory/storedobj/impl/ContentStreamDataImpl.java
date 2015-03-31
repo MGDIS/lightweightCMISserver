@@ -217,7 +217,7 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
         
         if (null == fContent) {
         	if (fLength == 0) return null;
-        	else return persistence.readContent(new File(getFilename())).getStream();
+        	else return persistence.getStream(new File(getFilename()));
         } else if (fStreamLimitOffset <= 0 && fStreamLimitLength < 0) {
                 return new ByteArrayInputStream(fContent);
         } else {            

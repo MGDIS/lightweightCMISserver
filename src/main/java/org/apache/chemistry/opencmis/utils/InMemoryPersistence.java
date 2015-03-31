@@ -20,6 +20,11 @@ public class InMemoryPersistence implements IPersistenceManager {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    public String getRootId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     
     public File getFile(String id) {
@@ -34,7 +39,7 @@ public class InMemoryPersistence implements IPersistenceManager {
     }
 
     
-    public ContentStream readContent(File file) {
+    public ContentStream readContent(File file, boolean closeOnEnd) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -90,7 +95,13 @@ public class InMemoryPersistence implements IPersistenceManager {
     }
 
 	
-	public File getFile(StoredObject so) {
+	public File getFile(StoredObject so, Map<String, StoredObject> storedObjectMap) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public InputStream getStream(File file) {
 		// TODO Auto-generated method stub
 		return null;
 	}

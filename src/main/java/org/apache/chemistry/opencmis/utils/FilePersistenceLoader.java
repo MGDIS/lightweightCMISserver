@@ -33,8 +33,9 @@ public class FilePersistenceLoader {
         // get the folder
         File folder = new File(parameters.get(ConfigConstants.TEMP_DIR));
         if (!folder.isDirectory()) {
-            throw new CmisObjectNotFoundException(folder.getAbsolutePath()
-                    + " is not a folder!");
+        	folder.mkdirs();
+            //throw new CmisObjectNotFoundException(folder.getAbsolutePath()
+            //        + " is not a folder!");
         }
 
         FilenameFilter filenameFilter = new FilenameFilter() {
@@ -78,11 +79,10 @@ public class FilePersistenceLoader {
                         persistenceManager);
             } else {
                 so = new DocumentImpl();
-                so.setName(child.getName());
-                so.setId(persistenceManager.getId(child));
                 StoredObject meta = persistenceManager
                         .readCMISFromDisk(new File(child.getAbsolutePath()
                                 + SUFFIXE_METADATA));
+                so.setId(child.getName());
                 if (meta != null) {
                     so = meta;
                 } else {
@@ -92,7 +92,7 @@ public class FilePersistenceLoader {
                     so.setTypeId(BaseTypeId.CMIS_DOCUMENT.value());
                 }
                 // read contentStream
-                ((DocumentImpl) so).setContent(persistenceManager.readContent(child));
+                ((DocumentImpl) so).setContent(persistenceManager.readContent(child, true));
                 so.setRepositoryId(repositoryId);
                 so.setStore(store);
             }

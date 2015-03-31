@@ -12,14 +12,17 @@ public interface IPersistenceManager {
     public void setRootPath(String rootPath);
 
     public String getRootPath();
+    public String getRootId();
 
     public File getFile(String id);
 
-    public File getFile(StoredObject so);
+    public File getFile(StoredObject so, Map<String, StoredObject> storedObjectMap);
     
     public File getMetadataFile(String id);
 
-    public ContentStream readContent(File file);
+    public InputStream getStream(File file);
+    
+    public ContentStream readContent(File file, boolean closeOnEnd);
 
     public int writeContent(File newFile, InputStream stream);
 

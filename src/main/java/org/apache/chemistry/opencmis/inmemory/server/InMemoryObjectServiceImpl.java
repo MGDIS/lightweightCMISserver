@@ -18,6 +18,9 @@
  */
 package org.apache.chemistry.opencmis.inmemory.server;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -484,6 +487,11 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
             String targetFolderId, String sourceFolderId, ExtensionsData extension, ObjectInfoHandler objectInfos) {
 
         LOG.debug("start moveObject()");
+        // fail fast when targetFolderId and sourceFolderId
+        if (targetFolderId.equals(sourceFolderId)) {
+        	throw new CmisConstraintException("Cannot move into the same folder", new BigInteger("400"));
+        }
+        
         StoredObject[] sos = validator.moveObject(context, repositoryId, objectId, targetFolderId, sourceFolderId,
                 extension);
         StoredObject so = sos[0];
@@ -516,7 +524,7 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
         } else {
             throw new CmisNotSupportedException("Source " + sourceFolderId + " of a move operation must be a folder");
         }
-
+        
         boolean foundOldParent = false;
         for (String parentId : objectStore.getParentIds(so, user)) {
             if (parentId.equals(soSource.getId())) {
@@ -928,8 +936,7 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
         if (((DocumentTypeDefinition) typeDef).isVersionable()) {
             DocumentVersion version = objectStore.createVersionedDocument(name, propMap, user, folder, policies,
                     aclAdd, aclRemove, contentStreamNew, versioningState);
-            createdDoc = version; // return the version and not the version series to
-                          // caller
+            createdDoc = version; // return the version and not the version series to caller
             version.setStore(objectStore);
         } else {
             Document doc = objectStore.createDocument(propMap, user, folder, contentStreamNew, policies, aclAdd, aclRemove);
