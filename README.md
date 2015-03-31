@@ -23,7 +23,8 @@ The configuration file is /src/main/webapp/WEB_INF/classes/repository.properties
 	class=org.apache.chemistry.opencmis.inmemory.server.InMemoryServiceFactoryImpl
 
 	# List of repositories file path that define each repository in details  
-	InMemoryServer.repositories=/A1.properties,/A2.properties
+	
+All the configure repository need to have a dedicated properties file at /src/main/webapp/WEB_INF/classes/. The content of these reposiroties file is the same as A1.properties.
 
 In the next section, you have to configure each repository.
 
