@@ -338,6 +338,7 @@ public class FilePersistence implements IPersistenceManager {
 		// result = new StoredObjectJsonSerializer()
 		// .deserialize(storedObjectStr);
 		// } else {
+		LOG.debug(storedObjectStr);
 		result = new StoredObjectJsonSerializer().deserialize(storedObjectStr);
 		// }
 
@@ -531,6 +532,21 @@ public class FilePersistence implements IPersistenceManager {
 			folderId = ((FolderImpl) parentStore).getParentId();
 		}
 		return parent;
+	}
+
+	@Override
+	public void moveObject(Map<String, StoredObject> storedObjectMap,
+			StoredObject so, Folder newParent) throws IOException {
+		// move data
+		File file = getFile(so, storedObjectMap);
+		File metadata = new File(file.getAbsolutePath() + ".metadata");
+		org.apache.commons.io.FileUtils.moveToDirectory(
+				file, 
+				getFile(newParent, storedObjectMap), false);
+		// move metadata
+		org.apache.commons.io.FileUtils.moveToDirectory(
+				metadata, 
+				getFile(newParent, storedObjectMap), false);
 	}
 
 }

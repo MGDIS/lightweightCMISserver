@@ -1,10 +1,12 @@
 package org.apache.chemistry.opencmis.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 
 public interface IPersistenceManager {
@@ -41,4 +43,7 @@ public interface IPersistenceManager {
 
     public void saveObject(Map<String, StoredObject> storedObjectMap,
             StoredObject so, boolean withContent);
+    
+    public void moveObject(Map<String, StoredObject> storedObjectMap, 
+    		StoredObject so, Folder newParent) throws IOException;
 }

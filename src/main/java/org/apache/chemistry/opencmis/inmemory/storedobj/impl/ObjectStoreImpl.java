@@ -808,11 +808,15 @@ public class ObjectStoreImpl implements ObjectStore {
 			lock();
 			if (so instanceof MultiFiling) {
 				MultiFiling fi = (MultiFiling) so;
+				// physical move
+				this.persistenceManager.moveObject(this.fStoredObjectMap, so, newParent);
 				addParentIntern(fi, newParent);
 				removeParentIntern(fi, oldParent);
 			} else if (so instanceof FolderImpl) {
 				((FolderImpl) so).setParentId(newParent.getId());
 			}
+		} catch (IOException e) {
+			LOG.error("Could not move object", e);
 		} finally {
 			unlock();
 		}
@@ -1165,9 +1169,10 @@ public class ObjectStoreImpl implements ObjectStore {
 					String extension = FilenameUtils.getExtension(fileName);
 					if (extension != null && !extension.equals(""))
 						extension = "." + extension;
-					// add directories to fileName
-					String id = Long.toString(System.nanoTime(), 36);
-					so.setId(id + extension);
+					if (so.getId() == null) {
+						String id = Long.toString(System.nanoTime(), 36);
+						so.setId(id + extension);
+					}
 					fileName = so.getStore().getPersistenceManager()
 							.getFile(so, fStoredObjectMap).getAbsolutePath();
 					newContent.setPersistencemanager(so.getStore()

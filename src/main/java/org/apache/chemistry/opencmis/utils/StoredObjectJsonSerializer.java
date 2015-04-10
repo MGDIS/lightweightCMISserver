@@ -253,7 +253,7 @@ public class StoredObjectJsonSerializer {
             ((MutablePropertyData<?>) propertyData)
                     .setQueryName((String) jsonPropertyData.get("queryName"));
             setValues(propertyData, (List<?>) jsonPropertyData.get("values"),
-                    jsonPropertyData.get("firstValue"));
+                    jsonPropertyData.get("firstValue") != null ? jsonPropertyData.get("firstValue").toString() : null);
             properties.put(property.getKey(), propertyData);
         }
         so.setProperties(properties);
