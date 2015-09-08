@@ -42,7 +42,6 @@ public class InMemoryAclService extends InMemoryAbstractServiceImpl {
 
     public Acl getAcl(CallContext context, String repositoryId, String objectId, Boolean onlyBasicPermissions,
             ExtensionsData extension, ObjectInfoHandler objectInfos) {
-        LOG.debug("start getAcl()");
         int aclId;
         StoredObject so = validator.getAcl(context, repositoryId, objectId, extension);
         ObjectStore objectStore = fStoreManager.getObjectStore(repositoryId);

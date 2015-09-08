@@ -143,8 +143,6 @@ public class InMemoryDiscoveryServiceImpl extends InMemoryAbstractServiceImpl {
     public ObjectList query(CallContext context, String repositoryId, String statement, Boolean searchAllVersions,
             Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
-
-        LOG.debug("start query()");
         validator.query(context, repositoryId, extension);
 
         String user = context.getUsername();
@@ -152,7 +150,6 @@ public class InMemoryDiscoveryServiceImpl extends InMemoryAbstractServiceImpl {
 
         res = fStoreManager.query(user, repositoryId, statement, searchAllVersions, includeAllowableActions,
                 includeRelationships, renditionFilter, maxItems, skipCount);
-        LOG.debug("stop query()");
         return res;
     }
 

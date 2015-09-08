@@ -1,23 +1,41 @@
 package org.apache.chemistry.opencmis.utils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.Properties;
+import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.data.PropertyDateTime;
+import org.apache.chemistry.opencmis.commons.data.PropertyString;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
+import org.apache.chemistry.opencmis.commons.impl.IOUtils;
 import org.apache.chemistry.opencmis.commons.impl.MimeTypes;
+import org.apache.chemistry.opencmis.commons.impl.XMLConverter;
+import org.apache.chemistry.opencmis.commons.impl.XMLUtils;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Document;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
@@ -27,6 +45,8 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FilingImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
+import org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoredObjectImpl;
+import org.codehaus.stax2.XMLStreamProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -317,7 +337,12 @@ public class FilePersistence implements IPersistenceManager {
 			return null;
 
 		if (!metadataFile.exists()) {
-			return null;
+			// check if a XXXX.cmis.xml file exists at the same position
+			if (new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + "/" + FilePersistenceLoader.SHADOW_FOLDER).exists())
+				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + "/cmis.xml"));
+			else if (new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "")  + FilePersistenceLoader.SHADOW_EXT).exists())
+				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + ".cmis.xml"));
+			else return null;
 		}
 
 		String storedObjectStr = "";
@@ -331,16 +356,62 @@ public class FilePersistence implements IPersistenceManager {
 			LOG.warn("When filtering with metadata", e);
 			return null;
 		}
-		// File content = new
-		// File(metadataFile.getAbsolutePath().replace(".metadata", ""));
 		StoredObject result = null;
-		// if (!content.isDirectory()) {
-		// result = new StoredObjectJsonSerializer()
-		// .deserialize(storedObjectStr);
-		// } else {
 		LOG.debug(storedObjectStr);
-		result = new StoredObjectJsonSerializer().deserialize(storedObjectStr);
-		// }
+		
+		// check if metadata file is an XML serialization
+		if (metadataFile.getName().endsWith(".xml")) {
+			result = metadataFile.getName().endsWith(FilePersistenceLoader.SHADOW_EXT) ? new DocumentImpl() : new FolderImpl();
+			result.setId(metadataFile.getName().endsWith(FilePersistenceLoader.SHADOW_EXT)
+					? getId(new File(metadataFile.getName().replace(FilePersistenceLoader.SHADOW_EXT, ""))) 
+					: getId(metadataFile.getParentFile())); 
+	        InputStream stream = null;
+			try {
+				stream = new BufferedInputStream(new FileInputStream(metadataFile), 64 * 1024);
+	            XMLStreamReader parser = XMLUtils.createParser(stream);
+				XMLUtils.findNextStartElemenet(parser);
+	            ObjectData obj = XMLConverter.convertObject(parser);
+	            // add it to properties
+	            HashMap<String, PropertyData<?>> properties = new HashMap<String, PropertyData<?>>();
+	            for (PropertyData<?> prop : obj.getProperties().getPropertyList()) {
+	                // overwrite object info
+	                if (prop instanceof PropertyString) {
+	                    String firstValueStr = ((PropertyString) prop).getFirstValue();
+	                    if (PropertyIds.NAME.equals(prop.getId())) {
+	                    	result.setName(firstValueStr);
+	                    } else if (PropertyIds.OBJECT_TYPE_ID.equals(prop.getId())) {
+	                    	result.setTypeId(firstValueStr);
+	                    } else if (PropertyIds.CREATED_BY.equals(prop.getId())) {
+	                    	result.setCreatedBy(firstValueStr);
+	                    } else if (PropertyIds.LAST_MODIFIED_BY.equals(prop.getId())) {
+	                    	result.setModifiedBy(firstValueStr);
+	                    } else if (PropertyIds.DESCRIPTION.equals(prop.getId())) {
+	                    	result.setDescription(firstValueStr);
+	                    } else if (PropertyIds.OBJECT_ID.equals(prop.getId())) {
+	                    	result.setId(firstValueStr);
+	                    }
+	                }
+
+	                if (prop instanceof PropertyDateTime) {
+	                    GregorianCalendar firstValueCal = ((PropertyDateTime) prop).getFirstValue();
+	                    if (PropertyIds.CREATION_DATE.equals(prop.getId())) {
+	                    	result.setCreatedAt(firstValueCal);
+	                    } else if (PropertyIds.LAST_MODIFICATION_DATE.equals(prop.getId())) {
+	                    	result.setModifiedAt(firstValueCal);
+	                    }
+	                }
+	                properties.put(prop.getId(), prop);
+	            }
+	            result.setProperties(properties);
+			} catch (Exception e) {
+				// Fail to read custom properties
+				LOG.warn("Unvalid CMIS properties: {}", metadataFile.getAbsolutePath(), e);
+			} finally {
+	            IOUtils.closeQuietly(stream);
+	        }
+		} else if (metadataFile.getName().endsWith(FilePersistenceLoader.SUFFIXE_METADATA)) {
+			result = new StoredObjectJsonSerializer().deserialize(storedObjectStr);
+		}
 
 		return result;
 	}
@@ -407,7 +478,7 @@ public class FilePersistence implements IPersistenceManager {
 		String parent = getParent(so);
 		while (parent != null && parent.length() > 0) {
 			StoredObject parentSO = storedObjectMap.get(parent);
-			if (parentSO.getName() == null)
+			if (parentSO == null || parentSO.getName() == null)
 				return null;
 			stb.insert(0, parentSO.getName() + "/");
 			parent = getParent(parentSO);

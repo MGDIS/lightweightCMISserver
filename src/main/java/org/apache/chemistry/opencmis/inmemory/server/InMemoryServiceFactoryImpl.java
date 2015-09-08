@@ -110,7 +110,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
     
     public void init(Map<String, String> parameters) {
         LOG.info("Initializing in-memory server...");
-        LOG.debug("Init parameters: " + parameters);
+        LOG.debug("Init parameters: " + parameters.entrySet().toString());
 
         // List all repository definition files
         String[] repositories = new String[0];
@@ -275,8 +275,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
 
     
     public CmisService getService(CallContext context) {
-        LOG.debug("start getService()");
-
+        
         // If a repository is specified then authenticate the incoming user
         // Else let request going
         if (context.getRepositoryId() != null
@@ -313,7 +312,6 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
 
         inMemoryService.setCallContext(contextToUse);
 
-        LOG.debug("stop getService()");
         return inMemoryService;
     }
 

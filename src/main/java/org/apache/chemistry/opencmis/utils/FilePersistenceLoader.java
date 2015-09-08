@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.impl.Constants;
 import org.apache.chemistry.opencmis.inmemory.ConfigConstants;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.MultiFiling;
@@ -25,6 +26,8 @@ public class FilePersistenceLoader {
             .getLogger(FilePersistenceLoader.class.getName());
 
     public static final String SUFFIXE_METADATA = ".metadata";
+    public static final String SHADOW_EXT = ".cmis.xml";
+    public static final String SHADOW_FOLDER = "cmis.xml";
 
     public static void loadDirectory(StoreManager storeManager,
             Map<String, String> parameters) {
@@ -39,9 +42,8 @@ public class FilePersistenceLoader {
         }
 
         FilenameFilter filenameFilter = new FilenameFilter() {
-            
             public boolean accept(File dir, String name) {
-                return !name.endsWith(SUFFIXE_METADATA);
+                return !name.endsWith(SUFFIXE_METADATA) && !name.endsWith(SHADOW_EXT) && !name.equals(SHADOW_FOLDER);
             }
         };
         loadFolder(repositoryId, store, folder, filenameFilter, storeManager
@@ -54,10 +56,10 @@ public class FilePersistenceLoader {
         // iterate through children
         for (File child : folder.listFiles(filenameFilter)) {
             // skip hidden files
-            if (child.isHidden()) {
-                continue;
-            }
+            if (child.isHidden()) continue;
 
+        	LOG.info("Loading file " + child.getAbsolutePath());
+        	
             StoredObject so = null;
             if (child.isDirectory()) {
                 so = new FolderImpl(child.getName(), child.getParent());
@@ -69,14 +71,14 @@ public class FilePersistenceLoader {
                 if (meta != null) {
                     so = meta;
                 } else {
-                    ((Folder) so).setParentId(persistenceManager.getId(folder));
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
                     so.setTypeId(BaseTypeId.CMIS_FOLDER.value());
                 }
+                if(((Folder) so).getTypeId() == null) ((Folder) so).setTypeId("cmis:folder");
+                ((Folder) so).setParentId(persistenceManager.getId(folder));
                 so.setRepositoryId(repositoryId);
                 // recursive loading
-                loadFolder(repositoryId, store, child, filenameFilter,
-                        persistenceManager);
+                loadFolder(repositoryId, store, child, filenameFilter, persistenceManager);
             } else {
                 so = new DocumentImpl();
                 StoredObject meta = persistenceManager
@@ -86,17 +88,16 @@ public class FilePersistenceLoader {
                 if (meta != null) {
                     so = meta;
                 } else {
-                    ((MultiFiling) so).addParentId(persistenceManager
-                            .getId(folder));
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
                     so.setTypeId(BaseTypeId.CMIS_DOCUMENT.value());
                 }
+                if(((DocumentImpl) so).getTypeId() == null) ((DocumentImpl) so).setTypeId("cmis:document");
+                ((MultiFiling) so).addParentId(persistenceManager.getId(folder));
                 // read contentStream
                 ((DocumentImpl) so).setContent(persistenceManager.readContent(child, true));
                 so.setRepositoryId(repositoryId);
                 so.setStore(store);
             }
-            LOG.debug("Loading file " + so.getName());
             store.storeObject(so, false);
         }
     }

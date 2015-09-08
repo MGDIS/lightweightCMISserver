@@ -79,8 +79,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
         ObjectListImpl res = new ObjectListImpl();
         List<ObjectData> odList = new ArrayList<ObjectData>();
 
-        LOG.debug("start getCheckedOutDocs()");
-
         String user = context.getUsername();
         ObjectStore objStore = fStoreManager.getObjectStore(repositoryId);
         if (null == folderId) {
@@ -121,7 +119,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
         res.setNumItems(BigInteger.valueOf(odList.size()));
         res.setHasMoreItems(false);
 
-        LOG.debug("end getCheckedOutDocs()");
         return res;
     }
 
@@ -129,8 +126,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
             String orderBy, Boolean includeAllowableActions, IncludeRelationships includeRelationships,
             String renditionFilter, Boolean includePathSegment, BigInteger maxItems, BigInteger skipCount,
             ExtensionsData extension, ObjectInfoHandler objectInfos) {
-
-        LOG.debug("start getChildren()");
 
         validator.getChildren(context, repositoryId, folderId, extension);
 
@@ -140,7 +135,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
         ObjectInFolderList res = getChildrenIntern(repositoryId, folderId, filter, orderBy, includeAllowableActions,
                 includeRelationships, renditionFilter, includePathSegment, maxItemsInt, skipCountInt, false, false,
                 context.isObjectInfoRequired() ? objectInfos : null, user);
-        LOG.debug("stop getChildren()");
         return res;
     }
 
@@ -148,8 +142,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
             BigInteger depth, String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter, Boolean includePathSegment,
             ExtensionsData extension, ObjectInfoHandler objectInfos) {
-
-        LOG.debug("start getDescendants()");
 
         validator.getDescendants(context, repositoryId, folderId, extension);
 
@@ -168,14 +160,11 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
                 includeAllowableActions, includeRelationships, renditionFilter, includePathSegment, level, levels,
                 false, objectInfos, user);
 
-        LOG.debug("stop getDescendants()");
         return result;
     }
 
     public ObjectData getFolderParent(CallContext context, String repositoryId, String folderId, String filter,
             ExtensionsData extension, ObjectInfoHandler objectInfos) {
-
-        LOG.debug("start getFolderParent()");
 
         StoredObject so = validator.getFolderParent(context, repositoryId, folderId, extension);
 
@@ -201,7 +190,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
             objectInfos.addObjectInfo(objectInfo);
         }
 
-        LOG.debug("stop getFolderParent()");
         return res;
     }
 
@@ -209,8 +197,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
             BigInteger depth, String filter, Boolean includeAllowableActions,
             IncludeRelationships includeRelationships, String renditionFilter, Boolean includePathSegment,
             ExtensionsData extension, ObjectInfoHandler objectInfos) {
-
-        LOG.debug("start getFolderTree()");
 
         validator.getFolderTree(context, repositoryId, folderId, extension);
 
@@ -225,7 +211,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
                 includeAllowableActions, includeRelationships, renditionFilter, includePathSegment, level, levels,
                 true, objectInfos, user);
 
-        LOG.debug("stop getFolderTree()");
         return result;
     }
 
@@ -233,8 +218,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
             String filter, Boolean includeAllowableActions, IncludeRelationships includeRelationships,
             String renditionFilter, Boolean includeRelativePathSegment, ExtensionsData extension,
             ObjectInfoHandler objectInfos) {
-
-        LOG.debug("start getObjectParents()");
 
         StoredObject so = validator.getObjectParents(context, repositoryId, objectId, extension);
         so.setStore(fStoreManager.getObjectStore(repositoryId));
@@ -262,7 +245,6 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
             objectInfos.addObjectInfo(objectInfo);
         }
 
-        LOG.debug("stop getObjectParents()");
         return result;
     }
 

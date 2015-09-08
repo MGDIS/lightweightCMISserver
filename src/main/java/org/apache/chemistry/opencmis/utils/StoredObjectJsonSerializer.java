@@ -284,10 +284,12 @@ public class StoredObjectJsonSerializer {
                     .setValue(toGregorianCalendar((String) value));
             List<String> dates = (List<String>) values;
             List<GregorianCalendar> datetimes = new ArrayList<GregorianCalendar>();
-            for (String date : dates) {
-                datetimes.add(toGregorianCalendar(date));
+            if(dates != null) {
+	            for (String date : dates) {
+	                datetimes.add(toGregorianCalendar(date));
+	            }
+	            ((PropertyDateTimeImpl) item).setValues(datetimes);
             }
-            ((PropertyDateTimeImpl) item).setValues(datetimes);
         } else if (item instanceof PropertyDecimalImpl) {
             ((PropertyDecimalImpl) item).setValue((BigDecimal) value);
             ((PropertyDecimalImpl) item).setValues((List<BigDecimal>) values);
