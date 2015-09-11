@@ -73,6 +73,7 @@ public class FilePersistenceLoader {
                 } else {
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
                     so.setTypeId(BaseTypeId.CMIS_FOLDER.value());
+                    so.setName(child.getName());
                 }
                 if(((Folder) so).getTypeId() == null) ((Folder) so).setTypeId("cmis:folder");
                 ((Folder) so).setParentId(persistenceManager.getId(folder));
@@ -89,6 +90,7 @@ public class FilePersistenceLoader {
                     so = meta;
                 } else {
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
+                    so.setName(child.getName());
                     so.setTypeId(BaseTypeId.CMIS_DOCUMENT.value());
                 }
                 if(((DocumentImpl) so).getTypeId() == null) ((DocumentImpl) so).setTypeId("cmis:document");

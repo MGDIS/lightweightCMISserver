@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.GregorianCalendar;
@@ -301,7 +302,7 @@ public class FilePersistence implements IPersistenceManager {
 		}
 
 		// return Base64.encodeBytes(getRepositoryPath(file).getBytes("UTF-8"));
-		return file.getName();
+		return (file.getAbsolutePath() + "/" + file.getName()).replace("/", "-");
 	}
 
 	/**
@@ -342,7 +343,8 @@ public class FilePersistence implements IPersistenceManager {
 				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + "/cmis.xml"));
 			else if (new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "")  + FilePersistenceLoader.SHADOW_EXT).exists())
 				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + ".cmis.xml"));
-			else return null;
+			else 
+				return null;
 		}
 
 		String storedObjectStr = "";
@@ -365,7 +367,7 @@ public class FilePersistence implements IPersistenceManager {
 			result.setId(metadataFile.getName().endsWith(FilePersistenceLoader.SHADOW_EXT)
 					? getId(new File(metadataFile.getName().replace(FilePersistenceLoader.SHADOW_EXT, ""))) 
 					: getId(metadataFile.getParentFile())); 
-	        InputStream stream = null;
+			InputStream stream = null;
 			try {
 				stream = new BufferedInputStream(new FileInputStream(metadataFile), 64 * 1024);
 	            XMLStreamReader parser = XMLUtils.createParser(stream);

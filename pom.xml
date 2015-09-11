@@ -23,8 +23,10 @@
 	<packaging>war</packaging>
 	<properties>
 		<parentBasedir>../../</parentBasedir>
+		<build-version>0.12.8</build-version>
 	</properties>
 	<build>
+		<finalName>opencmis-${build-version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
