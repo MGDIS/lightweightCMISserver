@@ -47,6 +47,7 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FilingImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoredObjectImpl;
+import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.codehaus.stax2.XMLStreamProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,10 @@ public class FilePersistence implements IPersistenceManager {
 
 	private String rootId = "@root@";
 
-	public FilePersistence() {
-
+	private TypeManager typeManager;
+	
+	public FilePersistence(TypeManager typeManager) {
+		this.typeManager = typeManager;
 	}
 
 	/** Root directory. */
@@ -317,7 +320,7 @@ public class FilePersistence implements IPersistenceManager {
 		String metadataFile = newFile.getAbsolutePath() + ".metadata";
 		try {
 			// out = new PrintWriter();
-			JSONObject json = new StoredObjectJsonSerializer().serialize(so);
+			JSONObject json = new StoredObjectJsonSerializer().serialize(so, typeManager);
 			org.apache.commons.io.FileUtils.writeStringToFile(new File(
 					metadataFile), json.toString());
 			// out.print(json);
@@ -412,7 +415,7 @@ public class FilePersistence implements IPersistenceManager {
 	            IOUtils.closeQuietly(stream);
 	        }
 		} else if (metadataFile.getName().endsWith(FilePersistenceLoader.SUFFIXE_METADATA)) {
-			result = new StoredObjectJsonSerializer().deserialize(storedObjectStr);
+			result = new StoredObjectJsonSerializer().deserialize(storedObjectStr, typeManager);
 		}
 
 		return result;

@@ -176,8 +176,10 @@ public class StoreManagerImpl implements StoreManager {
 
     private void internalInit(String repositoryId, Map<String, String> parameters){
 
-        fMapRepositoryToObjectStore.put(repositoryId, new ObjectStoreImpl(repositoryId, parameters.get(ConfigConstants.TEMP_DIR), new FilePersistence()));
-        fMapRepositoryToTypeManager.put(repositoryId, new TypeManagerImpl());
+    	fMapRepositoryToTypeManager.put(repositoryId, new TypeManagerImpl());
+    	fMapRepositoryToObjectStore.put(repositoryId, 
+    			new ObjectStoreImpl(repositoryId, parameters.get(ConfigConstants.TEMP_DIR), new FilePersistence(
+    					fMapRepositoryToTypeManager.get(repositoryId))));
         fMapRepositoryToInfo.put(repositoryId, createRepositoryInfo(repositoryId, parameters));
     }
     

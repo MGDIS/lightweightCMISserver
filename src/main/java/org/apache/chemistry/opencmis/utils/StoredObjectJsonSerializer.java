@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
@@ -17,6 +18,11 @@ import java.util.TimeZone;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.MutablePropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
+import org.apache.chemistry.opencmis.commons.definitions.PropertyDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
+import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer;
+import org.apache.chemistry.opencmis.commons.enums.Cardinality;
+import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.apache.chemistry.opencmis.commons.impl.JSONConstants;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyBooleanImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDateTimeImpl;
@@ -24,17 +30,23 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalImp
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyHtmlImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIntegerImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyUriImpl;
+import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisObjectType;
 import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParseException;
 import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParser;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.Document;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.MultiFiling;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoreManager;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
+import org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoredObjectImpl;
+import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +57,7 @@ public class StoredObjectJsonSerializer {
     public StoredObjectJsonSerializer() {
     }
 
-    public JSONObject serialize(final StoredObject so) {
+    public JSONObject serialize(final StoredObject so, TypeManager typeManager) {
         if (so == null) {
             return null;
         }
@@ -79,23 +91,25 @@ public class StoredObjectJsonSerializer {
         if (so.getProperties() != null) {
             for (PropertyData<?> item : so.getProperties().values()) {
                 JSONObject property = new JSONObject();
+                boolean manageValues = findProperty(item.getId(), typeManager).getCardinality().equals(Cardinality.MULTI);
                 String type = getType(item);
                 property.put("id", item.getId());
                 property.put("displayName", item.getDisplayName());
                 property.put("localName", item.getLocalName());
                 property.put("queryName", item.getQueryName());
                 property.put("type", type);
-                // TODO JLL : serialize dateTime!!!!
                 if (type.equals("dateTime")) {
                     property.put("firstValue",
                             toString((GregorianCalendar) item.getFirstValue()));
-                    List<String> values = new ArrayList<String>();
-                    for (Object value : item.getValues()) {
-                        values.add(toString((GregorianCalendar) value));
+                    if (manageValues) {
+                    	List<String> values = new ArrayList<String>();
+	                    for (Object value : item.getValues()) {
+	                        values.add(toString((GregorianCalendar) value));
+	                    }
                     }
                 } else {
                     property.put("firstValue", item.getFirstValue());
-                    property.put("values", item.getValues());
+                    if (manageValues) property.put("values", item.getValues());
                 }
                 properties.put(item.getId(), property);
             }
@@ -105,6 +119,26 @@ public class StoredObjectJsonSerializer {
         return result;
     }
 
+    private PropertyDefinition<?> findProperty(String propertyId, TypeManager typeManager){
+    	return findProperty(propertyId, typeManager.getTypeDefinitionList());
+    }
+    
+    private PropertyDefinition<?> findProperty(String propertyId, Collection<TypeDefinitionContainer> containers){
+        for (TypeDefinitionContainer typeDefinitionContainer : containers) {
+        	TypeDefinition typeDefinition = typeDefinitionContainer.getTypeDefinition();
+        	if (typeDefinition.getPropertyDefinitions().containsKey(propertyId)) {
+        		return typeDefinition.getPropertyDefinitions().get(propertyId);
+        	}
+        	return findProperty(propertyId, typeDefinitionContainer.getChildren());
+		}
+        // by default return a simple string property
+        PropertyStringDefinitionImpl defaultProperty = new PropertyStringDefinitionImpl();
+        defaultProperty.setCardinality(Cardinality.SINGLE);
+        defaultProperty.setId(propertyId);
+        defaultProperty.setPropertyType(PropertyType.STRING);
+        return defaultProperty;
+    }
+    
     private String getType(PropertyData<?> item) {
         if (item instanceof PropertyStringImpl) {
             return "string";
@@ -152,7 +186,7 @@ public class StoredObjectJsonSerializer {
     }
 
     @SuppressWarnings("unchecked")
-    public StoredObject deserialize(final String jsonString) {
+    public StoredObject deserialize(final String jsonString, TypeManager typeManager) {
         if (jsonString == null) {
             return null;
         }
@@ -161,7 +195,7 @@ public class StoredObjectJsonSerializer {
         try {
             result = (JSONObject) new JSONParser().parse(jsonString);
         } catch (JSONParseException e) {
-            // TODO Auto-generated catch block
+        	result = new JSONObject();
             e.printStackTrace();
         }
         StoredObject so = null;
@@ -240,6 +274,7 @@ public class StoredObjectJsonSerializer {
         Map<String, Object> jsonProperties = (Map<String, Object>) result
                 .get("properties");
         for (Map.Entry<String, Object> property : jsonProperties.entrySet()) {
+        	boolean manageValues = findProperty(property.getKey(), typeManager).getCardinality().equals(Cardinality.MULTI);
             JSONObject jsonPropertyData = (JSONObject) property.getValue();
             PropertyData<?> propertyData = getPropertyDataFromType((String) jsonPropertyData
                     .get("type"));
@@ -252,7 +287,7 @@ public class StoredObjectJsonSerializer {
                     .setLocalName((String) jsonPropertyData.get("localName"));
             ((MutablePropertyData<?>) propertyData)
                     .setQueryName((String) jsonPropertyData.get("queryName"));
-            setValues(propertyData, (List<?>) jsonPropertyData.get("values"),
+            setValues(propertyData, manageValues ? (List<?>) jsonPropertyData.get("values") : null,
                     jsonPropertyData.get("firstValue") != null ? jsonPropertyData.get("firstValue").toString() : null);
             properties.put(property.getKey(), propertyData);
         }
@@ -265,40 +300,42 @@ public class StoredObjectJsonSerializer {
     private void setValues(PropertyData<?> item, List<?> values, Object value) {
         if (item instanceof PropertyStringImpl) {
             ((PropertyStringImpl) item).setValue((String) value);
-            ((PropertyStringImpl) item).setValues((List<String>) values);
+            if(values != null) ((PropertyStringImpl) item).setValues((List<String>) values);
         } else if (item instanceof PropertyBooleanImpl) {
             ((PropertyBooleanImpl) item).setValue(Boolean
                     .valueOf((String) value));
-            ((PropertyBooleanImpl) item).setValues((List<Boolean>) values);
+            if(values != null) ((PropertyBooleanImpl) item).setValues((List<Boolean>) values);
         } else if (item instanceof PropertyUriImpl) {
             ((PropertyUriImpl) item).setValue((String) value);
-            ((PropertyUriImpl) item).setValues((List<String>) values);
+            if(values != null) ((PropertyUriImpl) item).setValues((List<String>) values);
         } else if (item instanceof PropertyHtmlImpl) {
             ((PropertyStringImpl) item).setValue((String) value);
-            ((PropertyStringImpl) item).setValues((List<String>) values);
+            if(values != null) ((PropertyStringImpl) item).setValues((List<String>) values);
         } else if (item instanceof PropertyIdImpl) {
             ((PropertyIdImpl) item).setValue((String) value);
-            ((PropertyIdImpl) item).setValues((List<String>) values);
+            if(values != null) ((PropertyIdImpl) item).setValues((List<String>) values);
         } else if (item instanceof PropertyDateTimeImpl) {
             ((PropertyDateTimeImpl) item)
                     .setValue(toGregorianCalendar((String) value));
-            List<String> dates = (List<String>) values;
-            List<GregorianCalendar> datetimes = new ArrayList<GregorianCalendar>();
-            if(dates != null) {
-	            for (String date : dates) {
-	                datetimes.add(toGregorianCalendar(date));
+            if(values != null) {
+	            List<String> dates = (List<String>) values;
+	            List<GregorianCalendar> datetimes = new ArrayList<GregorianCalendar>();
+	            if(dates != null) {
+		            for (String date : dates) {
+		                datetimes.add(toGregorianCalendar(date));
+		            }
+		            ((PropertyDateTimeImpl) item).setValues(datetimes);
 	            }
-	            ((PropertyDateTimeImpl) item).setValues(datetimes);
             }
         } else if (item instanceof PropertyDecimalImpl) {
             ((PropertyDecimalImpl) item).setValue((BigDecimal) value);
-            ((PropertyDecimalImpl) item).setValues((List<BigDecimal>) values);
+            if(values != null) ((PropertyDecimalImpl) item).setValues((List<BigDecimal>) values);
         } else if (item instanceof PropertyIntegerImpl) {
             ((PropertyIntegerImpl) item).setValue((BigInteger) value);
-            ((PropertyIntegerImpl) item).setValues((List<BigInteger>) values);
+            if(values != null) ((PropertyIntegerImpl) item).setValues((List<BigInteger>) values);
         } else {
             ((PropertyIdImpl) item).setValue((String) value);
-            ((PropertyIdImpl) item).setValues((List<String>) values);
+            if(values != null) ((PropertyIdImpl) item).setValues((List<String>) values);
         }
     }
 
