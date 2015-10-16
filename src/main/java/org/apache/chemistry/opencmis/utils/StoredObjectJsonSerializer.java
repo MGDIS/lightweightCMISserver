@@ -24,6 +24,7 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.apache.chemistry.opencmis.commons.impl.JSONConstants;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyBooleanImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDateTimeImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalImpl;
@@ -37,6 +38,7 @@ import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisObjectType;
 import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParseException;
 import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParser;
+import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Document;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
@@ -266,10 +268,11 @@ public class StoredObjectJsonSerializer {
                 && result.get(PropertyIds.SECONDARY_OBJECT_TYPE_IDS) != null) {
             List<String> jsonSecondaryTypes = (List<String>) result
                     .get(PropertyIds.SECONDARY_OBJECT_TYPE_IDS);
-            PropertyStringImpl secondaryTypes = new PropertyStringImpl(
+            PropertyIdImpl secondaryTypes = new PropertyIdImpl(
                     PropertyIds.SECONDARY_OBJECT_TYPE_IDS, jsonSecondaryTypes);
             properties.put(PropertyIds.SECONDARY_OBJECT_TYPE_IDS,
                     secondaryTypes);
+            so.getSecondaryTypeIds().addAll(secondaryTypes.getValues());
         }
         Map<String, Object> jsonProperties = (Map<String, Object>) result
                 .get("properties");

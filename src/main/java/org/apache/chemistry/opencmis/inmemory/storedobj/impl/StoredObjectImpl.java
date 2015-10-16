@@ -217,7 +217,7 @@ public class StoredObjectImpl implements StoredObject {
 
     
     public List<String> getSecondaryTypeIds() {
-        return Collections.unmodifiableList(secondaryTypeIds);
+        return secondaryTypeIds;
     }
 
     
