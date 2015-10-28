@@ -23,7 +23,7 @@
 	<packaging>war</packaging>
 	<properties>
 		<parentBasedir>../../</parentBasedir>
-		<build-version>0.12.10</build-version>
+		<build-version>0.12.11</build-version>
 	</properties>
 	<build>
 		<finalName>opencmis-${build-version}</finalName>
