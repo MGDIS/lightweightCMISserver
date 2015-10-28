@@ -300,7 +300,6 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
         InMemoryService inMemoryService = InMemoryServiceContext
                 .getCmisService();
         if (inMemoryService == null) {
-            LOG.debug("Creating new InMemoryService instance!");
             CmisServiceWrapper<InMemoryService> wrapperService;
             inMemoryService = new InMemoryService(storeManager);
             wrapperService = new CmisServiceWrapper<InMemoryService>(

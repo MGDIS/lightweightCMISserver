@@ -75,8 +75,9 @@ public class FilePersistenceLoader {
                     so.setTypeId(BaseTypeId.CMIS_FOLDER.value());
                     so.setName(child.getName());
                 }
-                if(((Folder) so).getTypeId() == null) ((Folder) so).setTypeId("cmis:folder");
-                ((Folder) so).setParentId(persistenceManager.getId(folder));
+                Folder fso = (Folder) so;
+                if (fso.getTypeId() == null) fso.setTypeId("cmis:folder");
+                if (fso.getParentId() == null) fso.setParentId(persistenceManager.getId(folder));
                 so.setRepositoryId(repositoryId);
                 // recursive loading
                 loadFolder(repositoryId, store, child, filenameFilter, persistenceManager);
