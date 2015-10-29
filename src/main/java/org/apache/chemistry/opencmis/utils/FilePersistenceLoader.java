@@ -94,8 +94,9 @@ public class FilePersistenceLoader {
                     so.setName(child.getName());
                     so.setTypeId(BaseTypeId.CMIS_DOCUMENT.value());
                 }
-                if(((DocumentImpl) so).getTypeId() == null) ((DocumentImpl) so).setTypeId("cmis:document");
-                ((MultiFiling) so).addParentId(persistenceManager.getId(folder));
+                DocumentImpl dso = (DocumentImpl) so;
+                if(dso.getTypeId() == null) dso.setTypeId("cmis:document");
+                if (dso.getParentIds() == null || dso.getParentIds().size() == 0) dso.addParentId(persistenceManager.getId(folder));
                 // read contentStream
                 ((DocumentImpl) so).setContent(persistenceManager.readContent(child, true));
                 so.setRepositoryId(repositoryId);
