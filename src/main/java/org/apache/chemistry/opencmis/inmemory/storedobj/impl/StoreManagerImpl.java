@@ -73,7 +73,7 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoreManager;
 import org.apache.chemistry.opencmis.server.support.TypeDefinitionFactory;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.apache.chemistry.opencmis.utils.FilePersistence;
-import org.apache.chemistry.opencmis.utils.IPersistenceManager;
+import org.apache.chemistry.opencmis.utils.PersistenceManager;
 import org.apache.chemistry.opencmis.utils.IUserManager;
 
 /**
@@ -140,7 +140,7 @@ public class StoreManagerImpl implements StoreManager {
         return fMapRepositoryToUserManager.get(repositoryId);
     }
     
-    public IPersistenceManager getPersistenceManager(String repositoryId) {
+    public PersistenceManager getPersistenceManager(String repositoryId) {
         return fMapRepositoryToObjectStore.get(repositoryId).getPersistenceManager();
     }
 

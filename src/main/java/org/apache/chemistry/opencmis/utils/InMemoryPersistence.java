@@ -9,7 +9,7 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 
-public class InMemoryPersistence implements IPersistenceManager {
+public class InMemoryPersistence extends PersistenceManager {
 
     
     public void setRootPath(String rootPath) {
@@ -115,5 +115,4 @@ public class InMemoryPersistence implements IPersistenceManager {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

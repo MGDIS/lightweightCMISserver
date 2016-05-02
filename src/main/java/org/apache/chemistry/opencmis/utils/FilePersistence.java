@@ -1,5 +1,8 @@
 package org.apache.chemistry.opencmis.utils;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +18,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -22,10 +26,12 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyDateTime;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
+import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
@@ -52,7 +58,7 @@ import org.codehaus.stax2.XMLStreamProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FilePersistence implements IPersistenceManager {
+public class FilePersistence extends PersistenceManager {
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(FilePersistence.class.getName());
@@ -180,7 +186,7 @@ public class FilePersistence implements IPersistenceManager {
 			// stream = new FileInputStream(file);
 			stream = org.apache.commons.io.FileUtils.openInputStream(file);
 
-			LOG.info("Read content from " + file.getAbsolutePath());
+			LOG.debug("Read content from " + file.getAbsolutePath());
 			// stream = new BufferedInputStream(new FileInputStream(file),
 			// BUFFER_SIZE);
 
@@ -305,7 +311,8 @@ public class FilePersistence implements IPersistenceManager {
 		}
 
 		// return Base64.encodeBytes(getRepositoryPath(file).getBytes("UTF-8"));
-		return (file.getAbsolutePath() + "/" + file.getName()).replace("/", "-");
+		//return (file.getAbsolutePath() + "/" + file.getName()).replace("/", "-");
+		return generateId();
 	}
 
 	/**
@@ -331,7 +338,7 @@ public class FilePersistence implements IPersistenceManager {
 					+ e.getMessage(), e);
 		}
 	}
-
+	
 	/**
 	 * Read the metadata from disc.
 	 */
@@ -355,7 +362,7 @@ public class FilePersistence implements IPersistenceManager {
 			storedObjectStr = org.apache.commons.io.FileUtils
 					.readFileToString(metadataFile);
 
-			LOG.info("Read metadata from " + metadataFile.getAbsolutePath());
+			LOG.debug("Read metadata from " + metadataFile.getAbsolutePath());
 			// storedObjectStr = readAllLines(new FileReader(file));
 		} catch (IOException e) {
 			LOG.warn("When filtering with metadata", e);
@@ -421,6 +428,25 @@ public class FilePersistence implements IPersistenceManager {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+    protected String getPathOfDocument(Fileable so) {
+        String path = null;
+        if (so instanceof DocumentImpl) {
+            StoredObject parent = so.getStore().getObjectById(so.getParentIds().get(0));
+            Map<String, PropertyData<?>> properties = parent.getProperties();
+            String parentPath = "";
+            if(properties != null) {
+                PropertyData<String> pd = (PropertyData<String>) properties.get(PropertyIds.PATH);
+                parentPath = pd.getFirstValue() + "/";
+            }
+            path = parentPath + so.getName();
+        } else {
+            PropertyData<String> pd = (PropertyData<String>) so.getProperties().get(PropertyIds.PATH);
+            path = pd.getFirstValue();
+        }
+        return path;
+    }
+	
 	/**
 	 * Delete file from disc
 	 */
@@ -429,8 +455,9 @@ public class FilePersistence implements IPersistenceManager {
 		if (root == null)
 			return;
 
-		File contentFile = getFile(so.getId());
-		File metadataFile = getMetadataFile(so.getId());
+		String path = getRootPath() + "/" +  getPathOfDocument((Fileable) so);
+		File contentFile = getFile(path);
+		File metadataFile = getMetadataFile(path);
 
 		// delete content file
 		delete(contentFile);
@@ -624,5 +651,4 @@ public class FilePersistence implements IPersistenceManager {
 				metadata, 
 				getFile(newParent, storedObjectMap), false);
 	}
-
 }

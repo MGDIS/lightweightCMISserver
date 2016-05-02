@@ -74,6 +74,10 @@ public class StoredObjectJsonSerializer {
             result.put(PropertyIds.PARENT_ID, ((Fileable) so).getParentIds());
         }
 
+        if (so instanceof Folder) {
+            result.put(PropertyIds.PATH, ((Folder) so).getPathSegment());
+        }
+        
         result.put(PropertyIds.CREATION_DATE, toString(so.getCreatedAt()));
         result.put(PropertyIds.CREATED_BY, so.getCreatedBy());
         result.put(PropertyIds.LAST_MODIFICATION_DATE,

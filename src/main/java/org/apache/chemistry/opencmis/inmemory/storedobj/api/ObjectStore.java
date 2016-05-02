@@ -30,7 +30,7 @@ import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 // add persistence manager import
-import org.apache.chemistry.opencmis.utils.IPersistenceManager;
+import org.apache.chemistry.opencmis.utils.PersistenceManager;
 
 /**
  * This is the interface an implementation must provide to store any kind of
@@ -576,7 +576,7 @@ public interface ObjectStore {
      * 
      * @return current persistence manager
      */
-    IPersistenceManager getPersistenceManager();
+    PersistenceManager getPersistenceManager();
 
 }
 

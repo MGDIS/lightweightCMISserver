@@ -109,8 +109,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
 
     
     public void init(Map<String, String> parameters) {
-        LOG.info("Initializing in-memory server...");
-        LOG.debug("Init parameters: " + parameters.entrySet().toString());
+        LOG.info("Initializing cmis server...");
 
         // List all repository definition files
         String[] repositories = new String[0];
@@ -168,7 +167,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
             configureRepository(parameters);
         }
         
-        LOG.info("...initialized in-memory server.");
+        LOG.info("...initialized cmis server.");
     }
 
     // Configure a new Repository from external file properties
@@ -412,6 +411,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
             LOG.info("So looking in " + classpathFile);
             typesStream = this.getClass().getResourceAsStream(classpathFile);
         } else if (f.canRead()) {
+            LOG.info("Found Types file " + f.getAbsolutePath());
             try {
                 typesStream = new FileInputStream(f);
             } catch (Exception e) {
@@ -438,7 +438,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
                     QName name = parser.getName();
                     if (name.getLocalPart().equals("type")) {
                         typeDef = XMLConverter.convertTypeDefinition(parser);
-                        LOG.debug("Found type in file: "
+                        LOG.debug("New CMIS type : "
                                 + typeDef.getLocalName());
                         if (typeDef.getPropertyDefinitions() == null) {
                             ((AbstractTypeDefinition) typeDef)

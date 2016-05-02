@@ -27,6 +27,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,7 +64,7 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.api.Relationship;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.VersionedDocument;
 import org.apache.chemistry.opencmis.inmemory.types.DefaultTypeSystemCreator;
-import org.apache.chemistry.opencmis.utils.IPersistenceManager;
+import org.apache.chemistry.opencmis.utils.PersistenceManager;
 import org.apache.chemistry.opencmis.utils.InMemoryPersistence;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -136,10 +137,10 @@ public class ObjectStoreImpl implements ObjectStore {
 	private FolderImpl fRootFolder = null;
 
 	private final String repositoryFilePath;
-	private IPersistenceManager persistenceManager = new InMemoryPersistence();
+	private PersistenceManager persistenceManager = new InMemoryPersistence();
 
 	public ObjectStoreImpl(String repositoryId, String filePath,
-			IPersistenceManager persistenceManager) {
+			PersistenceManager persistenceManager) {
 		fRepositoryId = repositoryId;
 		repositoryFilePath = filePath;
 		if (persistenceManager != null) {
@@ -1170,7 +1171,7 @@ public class ObjectStoreImpl implements ObjectStore {
 					if (extension != null && !extension.equals(""))
 						extension = "." + extension;
 					if (so.getId() == null) {
-						String id = Long.toString(System.nanoTime(), 36);
+						String id = so.getStore().getPersistenceManager().generateId();
 						so.setId(id + extension);
 					}
 					fileName = so.getStore().getPersistenceManager()
@@ -1238,7 +1239,7 @@ public class ObjectStoreImpl implements ObjectStore {
 		return RenditionUtil.getRenditionContent(so, streamId, offset, length);
 	}
 
-	public IPersistenceManager getPersistenceManager() {
+	public PersistenceManager getPersistenceManager() {
 		return persistenceManager;
 	}
 

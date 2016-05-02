@@ -34,7 +34,7 @@ import org.apache.chemistry.opencmis.commons.data.CmisExtensionElement;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.LastModifiedContentStream;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
-import org.apache.chemistry.opencmis.utils.IPersistenceManager;
+import org.apache.chemistry.opencmis.utils.PersistenceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +67,7 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
     
     private final boolean doNotStoreContent;
 
-    private IPersistenceManager persistence;
+    private PersistenceManager persistence;
 
     private static synchronized long getTotalLength() {
         return totalLength;
@@ -261,7 +261,7 @@ public class ContentStreamDataImpl implements LastModifiedContentStream {
         // not implemented
     }
 
-    public void setPersistencemanager(IPersistenceManager persistence) {
+    public void setPersistencemanager(PersistenceManager persistence) {
     	this.persistence = persistence;
     }
 }
