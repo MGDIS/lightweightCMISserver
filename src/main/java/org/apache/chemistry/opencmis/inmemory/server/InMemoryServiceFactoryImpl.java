@@ -422,7 +422,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
 
         if (typesStream == null) {
             LOG.warn("Resource file with type definitions " + typeDefsFileName
-                    + " could not be found, no types will be created.");
+                    + " could not be found, no additional CMIS types will be created.");
             return;
         }
 

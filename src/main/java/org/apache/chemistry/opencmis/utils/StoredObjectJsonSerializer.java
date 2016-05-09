@@ -24,7 +24,6 @@ import org.apache.chemistry.opencmis.commons.definitions.TypeDefinitionContainer
 import org.apache.chemistry.opencmis.commons.enums.Cardinality;
 import org.apache.chemistry.opencmis.commons.enums.PropertyType;
 import org.apache.chemistry.opencmis.commons.impl.JSONConstants;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.BindingsObjectFactoryImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyBooleanImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDateTimeImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyDecimalImpl;
@@ -34,20 +33,15 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIntegerImp
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringDefinitionImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringImpl;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyUriImpl;
-import org.apache.chemistry.opencmis.commons.impl.jaxb.CmisObjectType;
 import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParseException;
 import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParser;
-import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
-import org.apache.chemistry.opencmis.inmemory.storedobj.api.Document;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.MultiFiling;
-import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoreManager;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
-import org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoredObjectImpl;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,7 +199,7 @@ public class StoredObjectJsonSerializer {
             e.printStackTrace();
         }
         StoredObject so = null;
-        if (result.get(PropertyIds.OBJECT_TYPE_ID).equals("cmis:folder")) {
+        if ("cmis:folder".equals(result.get(PropertyIds.OBJECT_TYPE_ID))) {
             so = new FolderImpl();
             if (result.containsKey(PropertyIds.PARENT_ID)
                     && result.get(PropertyIds.PARENT_ID) != null) {

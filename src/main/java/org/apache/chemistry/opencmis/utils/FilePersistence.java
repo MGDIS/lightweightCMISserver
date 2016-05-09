@@ -1,38 +1,27 @@
 package org.apache.chemistry.opencmis.utils;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
-import org.apache.chemistry.opencmis.commons.data.ObjectParentData;
-import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyDateTime;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
-import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException;
@@ -42,7 +31,6 @@ import org.apache.chemistry.opencmis.commons.impl.MimeTypes;
 import org.apache.chemistry.opencmis.commons.impl.XMLConverter;
 import org.apache.chemistry.opencmis.commons.impl.XMLUtils;
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
 import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Document;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
@@ -52,9 +40,7 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FilingImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
-import org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoredObjectImpl;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
-import org.codehaus.stax2.XMLStreamProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,25 +131,6 @@ public class FilePersistence extends PersistenceManager {
 	}
 
 	/**
-	 * Converts an id to a File object. A simple and insecure implementation,
-	 * but good enough for now.
-	 */
-	private File idToFile(String id) throws IOException {
-		if (id == null || id.length() == 0) {
-			throw new CmisInvalidArgumentException("Id is not valid!");
-		}
-
-		if (id.equals(rootId)) {
-			return root;
-		}
-
-		// return new File(root, (new String(
-		// Base64.decode(id.getBytes("US-ASCII")), "UTF-8")).replace('/',
-		// File.separatorChar));
-		return new File(id);
-	}
-
-	/**
 	 * Read file content.
 	 */
 	public ContentStream readContent(File file, boolean closeOnEnd) {
@@ -249,7 +216,6 @@ public class FilePersistence extends PersistenceManager {
 	/**
 	 * Writes the content to disc.
 	 */
-	@SuppressWarnings("resource")
 	public int writeContent(File newFile, InputStream stream) {
 
 		if (root == null)
@@ -367,6 +333,9 @@ public class FilePersistence extends PersistenceManager {
 		} catch (IOException e) {
 			LOG.warn("When filtering with metadata", e);
 			return null;
+		}
+		if (storedObjectStr.equals("")) {
+		    return null;
 		}
 		StoredObject result = null;
 		LOG.debug(storedObjectStr);
