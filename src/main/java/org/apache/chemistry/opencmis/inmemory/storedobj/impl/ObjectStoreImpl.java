@@ -915,7 +915,7 @@ public class ObjectStoreImpl implements ObjectStore {
 			return true;
 		}
 		List<Integer> aclIds = getAllAclsForUser(principalId, permission);
-		return aclIds.contains(((StoredObjectImpl) so).getAclId());
+		return so == null ? false : aclIds.contains(((StoredObjectImpl) so).getAclId());
 	}
 
 	private InMemoryAcl getInMemoryAcl(int aclId) {
