@@ -12,21 +12,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.apache.chemistry.opencmis</groupId>
-		<artifactId>chemistry-opencmis</artifactId>
-		<version>0.13.0</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
-	<artifactId>chemistry-opencmis-server</artifactId>
+	<groupId>fr.mgdis.lightweightCMIS</groupId>
+	<artifactId>lightweightCMIS</artifactId>
 	<name>OpenCMIS Server WAR packaging</name>
 	<packaging>war</packaging>
 	<properties>
-		<parentBasedir>../../</parentBasedir>
+		<opencmis-version>0.13.0</opencmis-version>
 		<build-version>1.0.0-SNAPSHOT</build-version>
+		<junit.version>4.11</junit.version>
+		<slf4j.version>1.7.5</slf4j.version>
 	</properties>
+	<version>0.13.0-SNAPSHOT</version>
 	<build>
-		<finalName>opencmis-${build-version}</finalName>
+		<finalName>lightweightCMIS-${build-version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -35,19 +33,19 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Bundle-Name>org.apache.chemistry.opencmis.server.inmemory</Bundle-Name>
-							<Bundle-SymbolicName>org.apache.chemistry.opencmis.server.inmemory</Bundle-SymbolicName>
-							<Bundle-Version>0.0.1</Bundle-Version>
+							<Bundle-Name>fr.mgdis.lightweightCMIS</Bundle-Name>
+							<Bundle-SymbolicName>fr.mgdis.lightweightCMIS</Bundle-SymbolicName>
+							<Bundle-Version>${project.version}</Bundle-Version>
 							<Import-Package>javax.servlet,javax.servlet.http,javax.servlet.resources</Import-Package>
 							<Bundle-Classpath>.</Bundle-Classpath>
-							<Web-ContextPath>inmemory</Web-ContextPath>
+							<Web-ContextPath>lightweightCMIS</Web-ContextPath>
 						</manifestEntries>
 					</archive>
 					<overlays>
 						<overlay>
 						</overlay>
 						<overlay>
-							<groupId>${project.groupId}</groupId>
+							<groupId>org.apache.chemistry.opencmis</groupId>
 							<artifactId>chemistry-opencmis-server-bindings-war</artifactId>
 							<includes>
 								<include>**</include>
@@ -123,35 +121,35 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-commons-api</artifactId>
-			<version>${project.version}</version>
+			<version>${opencmis-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-commons-impl</artifactId>
-			<version>${project.version}</version>
+			<version>${opencmis-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-client-bindings</artifactId>
-			<version>${project.version}</version>
+			<version>${opencmis-version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-test-util</artifactId>
-			<version>${project.version}</version>
+			<version>${opencmis-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-server-support</artifactId>
-			<version>${project.version}</version>
+			<version>${opencmis-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-server-bindings</artifactId>
-			<version>${project.version}</version>
+			<version>${opencmis-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -159,9 +157,9 @@
 			<version>2.4</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.apache.chemistry.opencmis</groupId>
 			<artifactId>chemistry-opencmis-server-bindings-war</artifactId>
-			<version>${project.version}</version>
+			<version>${opencmis-version}</version>
 			<scope>provided</scope>
 			<type>war</type>
 		</dependency>
@@ -175,6 +173,13 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<type>jar</type>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
