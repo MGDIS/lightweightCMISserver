@@ -24,7 +24,6 @@
 	</properties>
 	<version>0.13.0-SNAPSHOT</version>
 	<build>
-		<finalName>lightweightCMIS-${build-version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
