@@ -1,19 +1,24 @@
 FROM haraldkoch/alpine-tomcat7
 MAINTAINER JLL "lelan-j@mgdis.fr"
 
-ADD target/*.war /tmp/chemistry-opencmis.war
+ENV VERSION 0.13.0-SNAPSHOT
+
+RUN mkdir /data
+RUN mkdir /conf
+ADD target/*.war /tmp/lightweightcmis-${VERSION}.war
 
 ENV TOMCAT_BASE /usr/tomcat
 
 # default user
 RUN addgroup tomcat && adduser -s /bin/bash -D -G tomcat tomcat
 
-RUN mkdir ${TOMCAT_BASE}/webapps/chemistry-opencmis \
-        && cd ${TOMCAT_BASE}/webapps/chemistry-opencmis \
-        && unzip -qq /tmp/chemistry-opencmis.war -d . \
+RUN mkdir ${TOMCAT_BASE}/webapps/lightweightcmis \
+        && cd ${TOMCAT_BASE}/webapps/lightweightcmis \
+        && unzip -qq /tmp/lightweightcmis-${VERSION}.war -d . \
         && chown -R tomcat:tomcat "$TOMCAT_BASE" \
         && chown -R tomcat:tomcat /data \
-        && chown -R tomcat:tomcat /conf
+        && chown -R tomcat:tomcat /conf \
+        && rm -fr /tmp/lightweightcmis-${VERSION}.war
 
 ENV GOSU_VERSION 1.7
 RUN set -x \
