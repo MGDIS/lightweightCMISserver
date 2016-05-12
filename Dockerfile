@@ -4,7 +4,6 @@ MAINTAINER JLL "lelan-j@mgdis.fr"
 ENV VERSION 0.13.0-SNAPSHOT
 
 RUN mkdir /data
-RUN mkdir /conf
 ADD target/*.war /tmp/lightweightcmis-${VERSION}.war
 
 ENV TOMCAT_BASE /usr/tomcat
@@ -17,7 +16,6 @@ RUN mkdir ${TOMCAT_BASE}/webapps/lightweightcmis \
         && unzip -qq /tmp/lightweightcmis-${VERSION}.war -d . \
         && chown -R tomcat:tomcat "$TOMCAT_BASE" \
         && chown -R tomcat:tomcat /data \
-        && chown -R tomcat:tomcat /conf \
         && rm -fr /tmp/lightweightcmis-${VERSION}.war
 
 ENV GOSU_VERSION 1.7
