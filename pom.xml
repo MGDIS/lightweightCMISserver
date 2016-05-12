@@ -13,7 +13,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.mgdis.backend</groupId>
-	<artifactId>lightweightCMIS</artifactId>
+	<artifactId>lightweightcmis</artifactId>
 	<name>OpenCMIS Server WAR packaging</name>
 	<packaging>war</packaging>
 	<properties>
@@ -32,8 +32,8 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Bundle-Name>fr.mgdis.lightweightCMIS</Bundle-Name>
-							<Bundle-SymbolicName>fr.mgdis.lightweightCMIS</Bundle-SymbolicName>
+							<Bundle-Name>fr.mgdis.lightweightcmis</Bundle-Name>
+							<Bundle-SymbolicName>fr.mgdis.lightweightcmis</Bundle-SymbolicName>
 							<Bundle-Version>${project.version}</Bundle-Version>
 							<Import-Package>javax.servlet,javax.servlet.http,javax.servlet.resources</Import-Package>
 							<Bundle-Classpath>.</Bundle-Classpath>
