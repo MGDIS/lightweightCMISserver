@@ -3,7 +3,7 @@ MAINTAINER JLL "lelan-j@mgdis.fr"
 
 ENV VERSION 0.13.0-SNAPSHOT
 
-RUN mkdir /data
+RUN mkdir -p /data/{logs,cmis}
 ADD target/*.war /tmp/lightweightcmis-${VERSION}.war
 
 ENV TOMCAT_BASE /usr/tomcat
