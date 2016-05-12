@@ -11,7 +11,9 @@ RUN addgroup tomcat && adduser -s /bin/bash -D -G tomcat tomcat
 RUN mkdir ${TOMCAT_BASE}/webapps/chemistry-opencmis \
         && cd ${TOMCAT_BASE}/webapps/chemistry-opencmis \
         && unzip -qq /tmp/chemistry-opencmis.war -d . \
-        && chown -R tomcat:tomcat "$TOMCAT_BASE"
+        && chown -R tomcat:tomcat "$TOMCAT_BASE" \
+        && chown -R tomcat:tomcat /data \
+        && chown -R tomcat:tomcat /conf
 
 ENV GOSU_VERSION 1.7
 RUN set -x \
