@@ -50,6 +50,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
 import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyStringImpl;
 import org.apache.chemistry.opencmis.inmemory.ConfigConstants;
 import org.apache.chemistry.opencmis.inmemory.ConfigurationSettings;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Content;
@@ -444,6 +445,8 @@ public class ObjectStoreImpl implements ObjectStore {
 			folder.setAppliedPolicies(policies);
 		}
 
+		String relativePath = persistenceManager.getFile(parent, fStoredObjectMap).getAbsolutePath().replace(persistenceManager.getRootPath(), "");
+		folder.getProperties().put(PropertyIds.PATH, new PropertyStringImpl(PropertyIds.PATH, relativePath + "/" + folder.getName()));
 		String id = storeObject(folder);
 		folder.setId(id);
 		applyAcl(folder, addACEs, removeACEs);

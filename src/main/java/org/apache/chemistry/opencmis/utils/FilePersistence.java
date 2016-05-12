@@ -411,7 +411,9 @@ public class FilePersistence extends PersistenceManager {
             path = parentPath + so.getName();
         } else {
             PropertyData<String> pd = (PropertyData<String>) so.getProperties().get(PropertyIds.PATH);
-            path = pd.getFirstValue();
+            if (pd != null) {
+                path = pd.getFirstValue();
+            }
         }
         return path;
     }
