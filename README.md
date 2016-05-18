@@ -21,8 +21,6 @@ The configuration file is `/src/main/webapp/WEB_INF/classes/repository.propertie
 # ServiceFactory Implementation class
 # Don't modify unless you know exactly what you are doing	
 class=org.apache.chemistry.opencmis.inmemory.server.InMemoryServiceFactoryImpl
-
-# List of repositories file path that define each repository in details  
 ```	
 All the configure repository need to have a dedicated properties file at /src/main/webapp/WEB_INF/classes/. The content of these reposiroties file is the same as `default.properties`.
 
