@@ -1,12 +1,10 @@
 # CMIS 1.1 compliant lightweight server
-### Status
-[![Build Status](https://travis-ci.org/johanlelan/lightweightCMISserver.svg?branch=master)](https://travis-ci.org/MGDIS/lightweightCMISserver) [![Coverage Status](https://img.shields.io/coveralls/johanlelan/lightweightCMISserver.svg)](https://coveralls.io/r/johanlelan/lightweightCMISserver)
 
-**This implementation is a fork of Apache Chemistry OpenCMIS inMemory Server with file persistence!**
+**This implementation is a fork of Apache Chemistry OpenCMIS inMemory Server 0.12.0 with file persistence!**
 
 If you want a lightweight CMIS 1.1 server that allows custom types, secondary types and authentication support. This implementation is for you.
 
-It persists all content files and metadata files (*.metatdata* extension file) on hard drive. 
+It persists all content files and metadata files (*.metatdata* extension file) on hard drive.
 
 If you want to know more about the CMIS Standard (see https://www.oasis-open.org/committees/cmis)
 
@@ -19,9 +17,9 @@ mvn clean install
 The configuration file is `/src/main/webapp/WEB_INF/classes/repository.properties`.
 ```bash
 # ServiceFactory Implementation class
-# Don't modify unless you know exactly what you are doing	
+# Don't modify unless you know exactly what you are doing
 class=org.apache.chemistry.opencmis.inmemory.server.InMemoryServiceFactoryImpl
-```	
+```
 All the configure repository need to have a dedicated properties file at /src/main/webapp/WEB_INF/classes/. The content of these reposiroties file is the same as `default.properties`.
 
 In the next section, you have to configure each repository.
@@ -50,16 +48,16 @@ InMemoryServer.TempDir=/temp/cmis/A1
 
 # settings for init repository with data
 persistenceDirectory=/data/cmis/default
-```	
+```
 
 ## Installation
-To install war file, you should use a Tomcat or Jetty server. 
-In Tomcat, just copy the war into /webapp directory and start your service. 
+To install war file, you should use a Tomcat or Jetty server.
+In Tomcat, just copy the war into /webapp directory and start your service.
 An index page will be available at(`http://localhost:8080/lightweightcmis`).
 
 ## Testing
-There is a good CMIS client developed by Apache Chemistry. 
-Just download the archive available here (`http://chemistry.apache.org/java/developing/tools/dev-tools-workbench.html`). 
+There is a good CMIS client developed by Apache Chemistry.
+Just download the archive available here (`http://chemistry.apache.org/java/developing/tools/dev-tools-workbench.html`).
 Uncompress it and run `workbench.bat` or `workbench.sh` (depends on your platform).
 ```bash    
 URL : http://localhost:8080/lightweightcmis/browser
@@ -76,11 +74,11 @@ Workbench provides a Test Client Kit (TCK) to verify CMIS 1.1 conformity. Feel f
 
 ### Proxyfied server
 If you want to trace every HTTP exchange between client and server then just install Fiddler (http://www.telerik.com/fiddler) and change your server url
-```http	
+```http
 URL : http://localhost.:8080/lightweightcmis/browser
 ```
 
-> Note: Usage of this URL may slowed down the server's response time! 
+> Note: Usage of this URL may slowed down the server's response time!
 
 ## Docker
 If you want to create a docker image.

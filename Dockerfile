@@ -1,7 +1,7 @@
 FROM haraldkoch/alpine-tomcat7
 MAINTAINER JLL "lelan-j@mgdis.fr"
 
-ENV VERSION 0.13.0-SNAPSHOT
+ENV VERSION 0.12.12-SNAPSHOT
 
 RUN mkdir -p /data/{logs,cmis}
 ADD target/*.war /tmp/lightweightcmis-${VERSION}.war
