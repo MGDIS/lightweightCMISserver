@@ -1,37 +1,60 @@
-FROM haraldkoch/alpine-tomcat7
+FROM java:openjdk-8-jre-alpine
 MAINTAINER JLL "lelan-j@mgdis.fr"
 
-ENV VERSION 0.13.0-SNAPSHOT
+# TOMCAT 
+# Expose web port
+EXPOSE 8080
 
-RUN mkdir -p /data/{logs,cmis}
+# Tomcat Version
+ENV TOMCAT_VERSION_MAJOR 7
+ENV TOMCAT_VERSION_FULL  7.0.69
+
+# Download and install
+RUN set -x \
+  && apk add --no-cache su-exec \
+  && apk add --update curl \
+  && addgroup tomcat && adduser -s /bin/bash -D -G tomcat tomcat \
+  && mkdir /opt \
+  && curl -LO https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION_MAJOR}/v${TOMCAT_VERSION_FULL}/bin/apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz \
+  && curl -LO https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION_MAJOR}/v${TOMCAT_VERSION_FULL}/bin/apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
+  && md5sum -c apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
+  && gunzip -c apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz | tar -xf - -C /opt \
+  && rm -f apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
+  && ln -s /opt/apache-tomcat-${TOMCAT_VERSION_FULL} /opt/tomcat \
+  && rm -rf /opt/tomcat/webapps/examples /opt/tomcat/webapps/docs \
+  && apk del curl \
+  && rm -rf /var/cache/apk/*
+
+# Configuration
+ADD tomcat-users.xml /opt/tomcat/conf/
+
+# Set environment
+ENV TOMCAT_BASE /opt/tomcat
+ENV CATALINA_HOME /opt/tomcat
+
+# lightweightcmis 
+
+#ENV VERSION 0.13.0-SNAPSHOT
+ENV VERSION 0.12.12-SNAPSHOT
+
+RUN set -x \
+    && mkdir -p /data/cmis \
+    && mkdir -p /data/log
+
 ADD target/*.war /tmp/lightweightcmis-${VERSION}.war
 
-ENV TOMCAT_BASE /usr/tomcat
-
-# default user
-RUN addgroup tomcat && adduser -s /bin/bash -D -G tomcat tomcat
-
-RUN mkdir ${TOMCAT_BASE}/webapps/lightweightcmis \
+RUN set -x \
+	&& mkdir ${TOMCAT_BASE}/webapps/lightweightcmis \
         && cd ${TOMCAT_BASE}/webapps/lightweightcmis \
         && unzip -qq /tmp/lightweightcmis-${VERSION}.war -d . \
         && chown -R tomcat:tomcat "$TOMCAT_BASE" \
         && chown -R tomcat:tomcat /data \
         && rm -fr /tmp/lightweightcmis-${VERSION}.war
 
-ENV GOSU_VERSION 1.7
-RUN set -x \
-    && apk add --no-cache --virtual .gosu-deps \
-        dpkg \
-        gnupg \
-        openssl \
-    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
-    && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
-    && export GNUPGHOME="$(mktemp -d)" \
-    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-    && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-    && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
-    && chmod +x /usr/local/bin/gosu \
-    && gosu nobody true \
-    && apk del .gosu-deps
+# Launch Tomcat on startup
 
-ENTRYPOINT ["gosu", "tomcat", "/usr/local/bin/run"]
+COPY docker-entrypoint.sh /
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD ["catalina","run"]
