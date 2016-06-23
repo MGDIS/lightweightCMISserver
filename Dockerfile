@@ -21,7 +21,7 @@ RUN set -x \
   && gunzip -c apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz | tar -xf - -C /opt \
   && rm -f apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
   && ln -s /opt/apache-tomcat-${TOMCAT_VERSION_FULL} /opt/tomcat \
-  && rm -rf /opt/tomcat/webapps/examples /opt/tomcat/webapps/docs \
+  && rm -rf /opt/tomcat/webapps/examples /opt/tomcat/webapps/docs /opt/tomcat/webapps/manager /opt/tomcat/webapps/host-manager \
   && apk del curl \
   && rm -rf /var/cache/apk/*
 
