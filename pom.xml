@@ -20,7 +20,7 @@
 		<junit.version>4.11</junit.version>
 		<slf4j.version>1.7.5</slf4j.version>
 	</properties>
-	<version>0.12.12</version>
+	<version>0.12.13</version>
 	<build>
 		<plugins>
 			<plugin>
