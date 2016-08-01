@@ -129,6 +129,17 @@ public class FilePersistenceLoader {
                         dso.getParentIds().size() == 0 || 
                         !dso.getParentIds().contains(folderId)) {
                     LOG.warn("Fixing document.parentIds : adding " + folderId + " into cmis:parentIds");
+                    /*
+                     * This is a bug fixing patch, in order to fix the orphean documents by adding
+                     * their current physical directory to the list of ParentIds. 
+                     * but we can't know if the orphean situation comes from a 'move' or a 'addToFolder' bug
+                     * therefore it is impossible to state if we have to set the current directory 
+                     * to a unique parentId or just add the missing parentId
+                     * 
+                     * By default it will be : set the current directory to a unique parentId
+                     * 
+                    */
+                    dso.getParentIds().clear();
                     dso.getParentIds().add(0, folderId);
                     toBeSaved = true;
                 }
