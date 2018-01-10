@@ -429,8 +429,14 @@ public class ObjectStoreImpl implements ObjectStore {
 			throw new CmisInvalidArgumentException("Cannot create root folder.");
 		}
 		else if (hasChild(parent, name)) {
+		    // do not return a 409.
+		    // return 200
+		    String relativePath = persistenceManager.getFile(parent, fStoredObjectMap).getAbsolutePath().replace(persistenceManager.getRootPath(), "");
+		    return (FolderImpl)getObjectByPath(relativePath + "/" + name, user);
+		    /*
 			throw new CmisNameConstraintViolationException(
 			 "Cannot create folder, this name already exists in parent folder.");
+			 */
 		}
 		FolderImpl folder = new FolderImpl(name, parent.getId());
 		if (null != propMap) {
@@ -1178,6 +1184,11 @@ public class ObjectStoreImpl implements ObjectStore {
 					if (so.getId() == null) {
 						String id = so.getStore().getPersistenceManager().generateId();
 						so.setId(id + extension);
+						// special case of duplication createDocumentFromSource
+						if (so.getName() != null) {
+    						extension = FilenameUtils.getExtension(so.getName());
+    						so.setId(id + "." + extension);
+						}
 					}
 					fileName = so.getStore().getPersistenceManager()
 							.getFile(so, fStoredObjectMap).getAbsolutePath();
