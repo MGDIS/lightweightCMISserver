@@ -310,8 +310,8 @@ public class StoredObjectJsonSerializer {
             ((PropertyUriImpl) item).setValue((String) value);
             if(values != null) ((PropertyUriImpl) item).setValues((List<String>) values);
         } else if (item instanceof PropertyHtmlImpl) {
-            ((PropertyStringImpl) item).setValue((String) value);
-            if(values != null) ((PropertyStringImpl) item).setValues((List<String>) values);
+            ((PropertyHtmlImpl) item).setValue((String) value);
+            if(values != null) ((PropertyHtmlImpl) item).setValues((List<String>) values);
         } else if (item instanceof PropertyIdImpl) {
             ((PropertyIdImpl) item).setValue((String) value);
             if(values != null) ((PropertyIdImpl) item).setValues((List<String>) values);
