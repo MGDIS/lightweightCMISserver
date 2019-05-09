@@ -17,6 +17,8 @@
 	<name>OpenCMIS Server WAR packaging</name>
 	<packaging>war</packaging>
 	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<opencmis-version>0.13.0</opencmis-version>
 		<build-version>1.0.0-SNAPSHOT</build-version>
 		<junit.version>4.11</junit.version>
