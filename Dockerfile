@@ -12,7 +12,7 @@ ENV TOMCAT_VERSION_FULL  7.0.69
 # Download and install
 RUN set -x \
   && apk add --no-cache su-exec \
-  && apk add --update curl \
+  && apk add --update curl unzip \
   && addgroup tomcat && adduser -s /bin/bash -D -G tomcat tomcat \
   && mkdir /opt \
   && curl -LO https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION_MAJOR}/v${TOMCAT_VERSION_FULL}/bin/apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz \
@@ -56,8 +56,6 @@ RUN set -x \
 COPY docker-entrypoint.sh /
 
 RUN chmod 755 /docker-entrypoint.sh
-
-VOLUME /data
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
