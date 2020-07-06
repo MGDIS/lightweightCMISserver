@@ -195,8 +195,8 @@ public class StoredObjectJsonSerializer {
         try {
             result = (JSONObject) new JSONParser().parse(jsonString);
         } catch (JSONParseException e) {
-        	result = new JSONObject();
             e.printStackTrace();
+            return null;
         }
         StoredObject so = null;
         if ("cmis:folder".equals(result.get(PropertyIds.OBJECT_TYPE_ID))) {
