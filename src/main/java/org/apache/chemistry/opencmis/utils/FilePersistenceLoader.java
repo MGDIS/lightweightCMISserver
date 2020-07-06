@@ -83,7 +83,7 @@ public class FilePersistenceLoader {
                     // if metadata file exists then meta is the CMIS Object
                     so = meta;
                 } else {
-                    LOG.warn("Missing metadata file for " + child.getAbsolutePath());
+                    LOG.warn("Missing metadata or malformed file for " + child.getAbsolutePath());
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
                     so.setTypeId(BaseTypeId.CMIS_FOLDER.value());
                     so.setName(child.getName());
@@ -117,7 +117,7 @@ public class FilePersistenceLoader {
                     // if metadata file exists then meta is the CMIS Object
                     so = meta;
                 } else {
-                    LOG.warn("Missing metadata file for " + child.getAbsolutePath());
+                    LOG.warn("Missing metadata or malformed file for " + child.getAbsolutePath());
                     so.setProperties(new LinkedHashMap<String, PropertyData<?>>());
                     so.setName(child.getName());
                     so.setTypeId(BaseTypeId.CMIS_DOCUMENT.value());
