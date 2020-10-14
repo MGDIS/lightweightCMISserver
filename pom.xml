@@ -17,7 +17,7 @@
 	<properties>
 		<opencmis-version>0.12.0</opencmis-version>
 		<build-version>1.0.0-SNAPSHOT</build-version>
-		<junit.version>4.11</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<slf4j.version>1.7.5</slf4j.version>
   		<maven.compiler.source>1.8</maven.compiler.source>
   		<maven.compiler.target>1.8</maven.compiler.target>
