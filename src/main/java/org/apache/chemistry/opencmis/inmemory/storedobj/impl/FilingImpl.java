@@ -56,4 +56,8 @@ public class FilingImpl extends StoredObjectImpl implements Fileable, MultiFilin
     public void removeParentId(String parentId) {
         parentIds.remove(parentId);
     }
+    
+    public String getPath() {
+    	return null;
+    }
 }
