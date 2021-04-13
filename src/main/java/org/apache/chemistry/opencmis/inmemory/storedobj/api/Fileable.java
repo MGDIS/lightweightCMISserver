@@ -23,5 +23,11 @@ package org.apache.chemistry.opencmis.inmemory.storedobj.api;
  *
  */
 public interface Fileable extends StoredObject, Filing {
+    
+    /**
+     * Return the relative path
+     * @return filesystem path
+     */
+    String getPath();
 
 }

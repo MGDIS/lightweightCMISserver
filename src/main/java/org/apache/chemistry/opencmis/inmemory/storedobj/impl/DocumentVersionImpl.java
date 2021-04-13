@@ -303,4 +303,8 @@ public class DocumentVersionImpl extends StoredObjectImpl implements DocumentVer
         fContainer.removeParentId(parentId);
     }
 
+    public String getPath() {
+    	return this.getPathSegment();
+    }
+
 }
