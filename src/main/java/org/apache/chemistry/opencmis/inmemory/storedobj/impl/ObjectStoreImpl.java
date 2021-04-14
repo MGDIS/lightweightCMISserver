@@ -179,8 +179,6 @@ public class ObjectStoreImpl implements ObjectStore {
 			return fRootFolder;
 		}
 		StoredObject so = fStoredObjectMap.get(path);
-		//StoredObject so = findObjectWithPathInDescendents(path, user,
-		//		Filing.PATH_SEPARATOR, fRootFolder);
 		return so;
 	}
 
