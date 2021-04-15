@@ -32,6 +32,7 @@ import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.inmemory.FilterParser;
 import org.apache.chemistry.opencmis.inmemory.NameValidator;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +117,21 @@ public class FolderImpl extends StoredObjectImpl implements Folder {
         }
         setName(name);
         this.parentId = parentId;
+    }
+    
+    public String getPath() {
+    	if (this.getParentId() == null) {
+    		return "/";
+    	}
+		if (this.getParentId() != null && this.getStore() != null) {
+			FolderImpl parent = (FolderImpl) this.getStore().getObjectById(this.getParentId());
+			String path = "/" + this.getName();
+			if (!parent.getPath().equals("/")) {
+				path = parent.getPath() + path;
+			}
+			return path;
+		}
+		return "/" + (this.getName() != null ? this.getName() : "");
     }
 
 }

@@ -125,8 +125,11 @@ public class InMemoryQueryProcessor {
 
         // iterate over all the objects and check for each if the query matches
         for (String objectId : ((ObjectStoreImpl) objectStore).getIds()) {
-            StoredObject so = objectStore.getObjectById(objectId);
-            match(so, user, searchAllVersions == null ? true : searchAllVersions.booleanValue());
+        	// keep only id map entries
+        	if (!objectId.startsWith("/")) {
+	            StoredObject so = objectStore.getObjectById(objectId);
+	            match(so, user, searchAllVersions == null ? true : searchAllVersions.booleanValue());
+        	}
         }
 
         ObjectList objList = buildResultList(tm, user, includeAllowableActions, includeRelationships, renditionFilter,

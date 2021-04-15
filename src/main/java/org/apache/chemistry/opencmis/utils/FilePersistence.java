@@ -43,6 +43,7 @@ import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FileUtils;
 
 public class FilePersistence extends PersistenceManager {
 
@@ -294,7 +295,7 @@ public class FilePersistence extends PersistenceManager {
 		try {
 			// out = new PrintWriter();
 			JSONObject json = new StoredObjectJsonSerializer().serialize(so, typeManager);
-			org.apache.commons.io.FileUtils.writeStringToFile(new File(
+			FileUtils.writeStringToFile(new File(
 					metadataFile), json.toString());
 			// out.print(json);
 			// out.flush();

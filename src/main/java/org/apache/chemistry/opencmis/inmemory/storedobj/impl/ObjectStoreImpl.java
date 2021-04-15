@@ -21,9 +21,11 @@ package org.apache.chemistry.opencmis.inmemory.storedobj.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +33,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Ace;
@@ -172,8 +175,10 @@ public class ObjectStoreImpl implements ObjectStore {
 	}
 
 	public StoredObject getObjectByPath(String path, String user) {
-		StoredObject so = findObjectWithPathInDescendents(path, user,
-				Filing.PATH_SEPARATOR, fRootFolder);
+		if (path == "/") {
+			return fRootFolder;
+		}
+		StoredObject so = fStoredObjectMap.get(path);
 		return so;
 	}
 
@@ -268,7 +273,15 @@ public class ObjectStoreImpl implements ObjectStore {
 		if (saveOnExit) {
 			persistenceManager.saveObject(fStoredObjectMap, so, true);
 		}
+		// put by id
 		fStoredObjectMap.put(id, so);
+		// put by path
+		if (so instanceof Fileable) {
+			String path = ((Fileable) so).getPath();
+			if (path != null) {
+				fStoredObjectMap.put(path, so);
+			}
+		}
 
 		return id;
 	}
@@ -279,6 +292,11 @@ public class ObjectStoreImpl implements ObjectStore {
 
 	void removeObject(String id) {
 		StoredObject obj = fStoredObjectMap.get(id);
+		if (obj instanceof Fileable) {
+			// remove path entry
+			fStoredObjectMap.remove(((Fileable) obj).getPath());
+		}
+		// remove id entry
 		fStoredObjectMap.remove(id);
 		persistenceManager.deleteFromDisk(obj);
 		LOG.debug("Deleted " + obj.getName());
@@ -444,7 +462,7 @@ public class ObjectStoreImpl implements ObjectStore {
 			folder.setCustomProperties(propMap);
 		}
 		folder.setRepositoryId(fRepositoryId);
-
+		folder.setStore(this);
 		int aclId = getAclId(((FolderImpl) parent), addACEs, removeACEs);
 		folder.setAclId(aclId);
 		if (null != policies) {
@@ -728,6 +746,9 @@ public class ObjectStoreImpl implements ObjectStore {
 					+ folderId + ". Folder is not empty.");
 		}
 
+		// remove by path
+		fStoredObjectMap.remove(((FolderImpl) folder).getPath());
+		// remove by id
 		fStoredObjectMap.remove(folderId);
 		// Delete on disk
 		persistenceManager.deleteFromDisk(folder);
@@ -783,7 +804,10 @@ public class ObjectStoreImpl implements ObjectStore {
 				}
 			}
 		}
-		return children;
+		// keep only distinct children ()
+		Set<Fileable> uniques = new HashSet<Fileable>(children);
+		return (List<Fileable>)uniques.stream()
+                .collect(Collectors.toList());
 	}
 
 	public ChildrenResult getFolderChildren(Folder folder, int maxItems,
@@ -825,7 +849,10 @@ public class ObjectStoreImpl implements ObjectStore {
 				addParentIntern(fi, newParent);
 				removeParentIntern(fi, oldParent);
 			} else if (so instanceof FolderImpl) {
+				// remove MapEntry with old path
+				fStoredObjectMap.remove(((FolderImpl) so).getPath());
 				((FolderImpl) so).setParentId(newParent.getId());
+				fStoredObjectMap.put(((FolderImpl) so).getPath(), so);
 			}
 		} catch (IOException e) {
 			LOG.error("Could not move object", e);
@@ -852,8 +879,12 @@ public class ObjectStoreImpl implements ObjectStore {
 										+ getFolderPath(folder.getId()) + ".");
 					}
 				}
+				// remove by old path
+				fStoredObjectMap.remove(((Fileable) so).getPath());
 			}
 			so.setName(newName);
+			// add by new path
+			fStoredObjectMap.put(((Fileable) so).getPath(), so);
 		} finally {
 			unlock();
 		}
