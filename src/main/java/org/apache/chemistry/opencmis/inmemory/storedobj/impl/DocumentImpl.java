@@ -27,7 +27,6 @@ import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.chemistry.opencmis.inmemory.FilterParser;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Document;
-import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +47,12 @@ public class DocumentImpl extends FilingImpl implements Document {
 
     
     public ContentStream getContent() {
-        return fContent;
+    	return this.fContent;
     }
-
     
     public void setContent(ContentStream content) {
-        fContent = content;
+    	this.fContent = content;
     }
-
     
     public void fillProperties(Map<String, PropertyData<?>> properties, BindingsObjectFactory objFactory,
             List<String> requestedIds) {

@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.UUID;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.ObjectStore;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 
 public abstract class PersistenceManager {
@@ -35,7 +37,7 @@ public abstract class PersistenceManager {
 
     public abstract void writeCMISToDisc(File newFile, StoredObject so);
 
-    public abstract StoredObject readCMISFromDisk(File metadataFile);
+    public abstract SimpleImmutableEntry<Boolean, StoredObject> readCMISFromDisk(File metadataFile, ObjectStore store);
 
     public abstract void deleteFromDisk(StoredObject so);
 
