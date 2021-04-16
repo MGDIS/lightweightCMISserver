@@ -357,7 +357,7 @@ public class InMemoryNavigationServiceImpl extends InMemoryAbstractServiceImpl {
                         includeAllowableActions, includeRelationships, renditionFilter, false, true, null);
                 parentData.setObject(objData);
                 if (null != includeRelativePathSegment && includeRelativePathSegment && so instanceof Fileable) {
-                    parentData.setRelativePathSegment(((Fileable) so).getPathSegment());
+                    parentData.setRelativePathSegment(((Fileable) so).getPath());
                 }
                 result.add(parentData);
                 if (objectInfos != null) {

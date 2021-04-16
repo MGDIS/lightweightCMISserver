@@ -69,7 +69,7 @@ public class StoredObjectJsonSerializer {
         }
 
         if (so instanceof Folder) {
-            result.put(PropertyIds.PATH, ((Folder) so).getPathSegment());
+            result.put(PropertyIds.PATH, ((Folder) so).getPath());
         }
         
         result.put(PropertyIds.CREATION_DATE, toString(so.getCreatedAt()));

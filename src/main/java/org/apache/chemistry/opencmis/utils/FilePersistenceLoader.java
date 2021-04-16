@@ -94,16 +94,17 @@ public class FilePersistenceLoader {
                         || !properties.get(PropertyIds.PATH).getFirstValue().equals(relativePath)) {
                     LOG.warn("Fixing cmis:path for " + relativePath);
                     properties.put(PropertyIds.PATH, new PropertyStringImpl(PropertyIds.PATH, relativePath));
-                    toBeSaved = true;
+                    //toBeSaved = true;
                 }
                 Folder fso = (Folder) so;
                 if (fso.getTypeId() == null) fso.setTypeId("cmis:folder");
                 if (!folderId.equals(fso.getParentId())) {
                     LOG.warn("Fixing folder.parentId : setting " + folderId + " into cmis:parentId");
                     fso.setParentId(folderId);
-                    toBeSaved = true;
+                    //toBeSaved = true;
                 }
                 so.setRepositoryId(repositoryId);
+                so.setStore(store);
             } else {
                 so = new DocumentImpl();
                 File metadataFile = new File(child.getAbsolutePath()
