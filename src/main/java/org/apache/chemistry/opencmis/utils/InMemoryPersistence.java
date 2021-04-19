@@ -117,4 +117,11 @@ public class InMemoryPersistence extends PersistenceManager {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	@Override
+	public ContentStream readFileAttributes(File file) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
