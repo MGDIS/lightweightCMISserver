@@ -36,6 +36,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<archive>
 						<manifestEntries>
 							<Bundle-Name>fr.mgdis.lightweightcmis</Bundle-Name>
