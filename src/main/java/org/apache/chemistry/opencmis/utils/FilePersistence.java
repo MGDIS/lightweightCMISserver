@@ -135,7 +135,39 @@ public class FilePersistence extends PersistenceManager {
 	}
 
 	/**
+	 * Read file descriptor.
+	 * 
+	 * @return ContentStream without stream
+	 */
+	public ContentStream readFileAttributes(File file) {
+
+		if (root == null)
+			return null;
+
+		if (!file.isFile()) {
+			throw new CmisStreamNotSupportedException(file.getAbsolutePath()
+					+ " is not a file!");
+		}
+
+		if (file.length() == 0) {
+			LOG.warn("Document (" + file.getAbsolutePath()
+					+ ") has no content!");
+		}
+
+		ContentStreamImpl result;
+		result = new ContentStreamImpl();
+
+		result.setFileName(file.getName());
+		result.setLength(BigInteger.valueOf(file.length()));
+		result.setMimeType(MimeTypes.getMIMEType(file));
+	
+		return result;
+	}
+	
+	/**
 	 * Read file content.
+	 * 
+	 * @return ContentStream with stream
 	 */
 	public ContentStream readContent(File file, boolean closeOnEnd) {
 
@@ -152,23 +184,15 @@ public class FilePersistence extends PersistenceManager {
 					+ ") has no content!");
 		}
 
+		ContentStream result = this.readFileAttributes(file);
+		
 		InputStream stream = null;
 		try {
 			// stream = new FileInputStream(file);
 			stream = org.apache.commons.io.FileUtils.openInputStream(file);
 
 			LOG.debug("Read content from " + file.getAbsolutePath());
-			// stream = new BufferedInputStream(new FileInputStream(file),
-			// BUFFER_SIZE);
-
-			// compile data
-			ContentStreamImpl result;
-			result = new ContentStreamImpl();
-
-			result.setFileName(file.getName());
-			result.setLength(BigInteger.valueOf(file.length()));
-			result.setMimeType(MimeTypes.getMIMEType(file));
-			result.setStream(stream);
+			((ContentStreamImpl) result).setStream(stream);
 
 			return result;
 		} catch (IOException e) {

@@ -7,3 +7,4 @@
 .vscode
 .DS_Store
 .tomcatplugin
+src/main/webapp/WEB-INF/classes/.default.properties

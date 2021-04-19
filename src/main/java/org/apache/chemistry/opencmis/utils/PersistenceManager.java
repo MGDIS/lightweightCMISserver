@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.AbstractMap.SimpleImmutableEntry;
 
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.ObjectStore;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
@@ -26,6 +27,8 @@ public abstract class PersistenceManager {
     public abstract File getMetadataFile(String id);
 
     public abstract InputStream getStream(File file);
+    
+    public abstract ContentStream readFileAttributes(File file);
     
     public abstract ContentStream readContent(File file, boolean closeOnEnd);
 
