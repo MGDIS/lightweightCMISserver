@@ -594,6 +594,10 @@ public class InMemoryServiceValidatorImpl extends BaseServiceValidatorImpl {
             UnfileObject unfileObjects, ExtensionsData extension) {
 
         StoredObject so = super.deleteTree(context, repositoryId, folderId, allVersions, unfileObjects, extension);
+        // consider idempotency for many deleteTree on the same folder
+        if (so == null) {
+        	return null;
+        }
         checkWriteAccess(repositoryId, context.getUsername(), so);
         return so;
     }

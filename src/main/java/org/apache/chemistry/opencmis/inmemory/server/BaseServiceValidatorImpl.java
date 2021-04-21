@@ -79,6 +79,41 @@ public class BaseServiceValidatorImpl implements CmisServiceValidator {
      *            repository id
      * @param objectId
      *            object id
+     * @param action
+     *            cmis action
+     * @return object for objectId
+     */
+    protected StoredObject checkStandardParameters(String repositoryId, String objectId, String action) {
+    	// consider idempotency for many deleteTree
+    	if (!"deleteTree".equals(action)) {
+    		return checkStandardParameters(repositoryId, objectId);
+    	}
+        if (null == repositoryId) {
+            throw new CmisInvalidArgumentException(REPOSITORY_ID_CANNOT_BE_NULL);
+        }
+
+        if (null == objectId) {
+            throw new CmisInvalidArgumentException(OBJECT_ID_CANNOT_BE_NULL);
+        }
+
+        ObjectStore objStore = fStoreManager.getObjectStore(repositoryId);
+
+        if (objStore == null) {
+            throw new CmisObjectNotFoundException(UNKNOWN_REPOSITORY_ID + repositoryId);
+        }
+
+        return objStore.getObjectById(objectId);
+    }
+    
+    /**
+     * Check if repository is known and that object exists. To avoid later calls
+     * to again retrieve the object from the id return the retrieved object for
+     * later use.
+     * 
+     * @param repositoryId
+     *            repository id
+     * @param objectId
+     *            object id
      * @return object for objectId
      */
     protected StoredObject checkStandardParameters(String repositoryId, String objectId) {
@@ -647,7 +682,7 @@ public class BaseServiceValidatorImpl implements CmisServiceValidator {
     
     public StoredObject deleteTree(CallContext context, String repositoryId, String folderId, Boolean allVersions,
             UnfileObject unfileObjects, ExtensionsData extension) {
-        return checkStandardParameters(repositoryId, folderId);
+        return checkStandardParameters(repositoryId, folderId, "deleteTree");
     }
 
     

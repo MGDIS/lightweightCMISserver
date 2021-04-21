@@ -70,6 +70,7 @@ import org.apache.chemistry.opencmis.commons.enums.IncludeRelationships;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
@@ -96,7 +97,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Ignore
+
 public class ObjectServiceTest extends AbstractServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(ObjectServiceTest.class);
@@ -124,7 +125,7 @@ public class ObjectServiceTest extends AbstractServiceTest {
     public static final String TEST_ITEM_TYPE_ID = "MyItemType";
     public static final String ITEM_STRING_PROP = "ItemStringProp";
     private static final String DOCUMENT_TYPE_ID = DocumentTypeCreationHelper.getCmisDocumentType().getId();
-    private static final String DOCUMENT_ID = "Document_1";
+    private static final String DOCUMENT_ID = "Document_1.txt";
     private static final String FOLDER_TYPE_ID = DocumentTypeCreationHelper.getCmisFolderType().getId();
     private static final String FOLDER_ID = "Folder_1";
     private static final String MY_CUSTOM_NAME = "My Custom Document";
@@ -251,13 +252,9 @@ public class ObjectServiceTest extends AbstractServiceTest {
             assertTrue(e instanceof CmisInvalidArgumentException);
         }
 
-        try {
-            createFolderNoCatch("DuplicatedName", fRootFolderId, FOLDER_TYPE_ID);
-            createFolderNoCatch("DuplicatedName", fRootFolderId, FOLDER_TYPE_ID);
-            fail("Folder creation with existing name should fail.");
-        } catch (Exception e) {
-            assertTrue(e instanceof CmisNameConstraintViolationException || e instanceof IllegalArgumentException);
-        }
+        //duplicate folder creation with existing name should not failed anymore
+        createFolderNoCatch("DuplicatedName", fRootFolderId, FOLDER_TYPE_ID);
+        createFolderNoCatch("DuplicatedName", fRootFolderId, FOLDER_TYPE_ID);
     }
 
     @Test
@@ -351,7 +348,7 @@ public class ObjectServiceTest extends AbstractServiceTest {
                     BigInteger.valueOf(-1) /* length */, null);
             fail("getContentStream with non existing content should raise a CmisConstraintException");
         } catch (Exception e) {
-            assertTrue(e instanceof CmisConstraintException);
+            assertTrue(e instanceof CmisBaseException);
         }
 
         // create content again in a second call
@@ -630,6 +627,8 @@ public class ObjectServiceTest extends AbstractServiceTest {
         // each folder
         gen.createFolderHierachy(1, 1, rootFolderId);
         try {
+            fObjSvc.deleteTree(fRepositoryId, rootFolderId, null /* true */, UnfileObject.DELETE, true, null);
+            // invoking two times should not fail
             fObjSvc.deleteTree(fRepositoryId, rootFolderId, null /* true */, UnfileObject.DELETE, true, null);
         } catch (Exception e) {
             fail("deleteTree failed unexpected. " + e);
@@ -1011,6 +1010,7 @@ public class ObjectServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    @Ignore
     public void testRenditionImage() {
         // upload an image as JPEG picture
         log.info("starting testRendition() ...");
@@ -1019,7 +1019,7 @@ public class ObjectServiceTest extends AbstractServiceTest {
             InputStream imageStream = this.getClass().getResourceAsStream("/image.jpg");
             assertNotNull("Test setup failure no 'image.jpg' in test resources, getResourceAsStream failed",
                     imageStream);
-            String id = createDocumentFromStream("TestJpegImage", fRootFolderId, DOCUMENT_TYPE_ID, imageStream, JPEG);
+            String id = createDocumentFromStream("TestJpegImage.jpg", fRootFolderId, DOCUMENT_TYPE_ID, imageStream, JPEG);
 
             assertNotNull(id);
             String renditionFilter = "*";
@@ -1124,6 +1124,7 @@ public class ObjectServiceTest extends AbstractServiceTest {
     }
 
     @Test
+    @Ignore
     public void testAppendContent() {
         log.info("starting testAppendContent() ...");
         String id = createDocument(fRootFolderId, true);

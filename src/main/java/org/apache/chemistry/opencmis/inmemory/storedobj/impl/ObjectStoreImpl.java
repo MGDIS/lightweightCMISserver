@@ -1190,6 +1190,12 @@ public class ObjectStoreImpl implements ObjectStore {
 	}
 
 	public ContentStream setContent(StoredObject so, ContentStream contentStream) {
+		if (contentStream == null &&
+				so instanceof Content &&
+				((Content) so).getContent() != null &&
+				((Content) so).getContent().getFileName() != null) {
+			so.getStore().getPersistenceManager().deleteFromDisk(so);
+		}
 		if (contentStream == null) return null;
 		String fileName = contentStream.getFileName();
 		try {
@@ -1221,11 +1227,8 @@ public class ObjectStoreImpl implements ObjectStore {
     						so.setId(id + "." + extension);
 						}
 					}
-					fileName = so.getStore().getPersistenceManager()
-							.getFile(so, fStoredObjectMap).getAbsolutePath();
 					newContent.setPersistencemanager(so.getStore()
 							.getPersistenceManager());
-					newContent.setFileName(fileName);
 					String mimeType = contentStream.getMimeType();
 					if (null == mimeType || mimeType.length() <= 0) {
 						mimeType = "application/octet-stream"; // use as
@@ -1233,6 +1236,9 @@ public class ObjectStoreImpl implements ObjectStore {
 					}
 					newContent.setMimeType(mimeType);
 					newContent.setLastModified(new GregorianCalendar());
+					fileName = so.getStore().getPersistenceManager()
+						.getFile(so, fStoredObjectMap).getAbsolutePath();
+					newContent.setFileName(fileName);
 					try {
 						newContent.setContent(contentStream.getStream());
 					} catch (IOException e) {

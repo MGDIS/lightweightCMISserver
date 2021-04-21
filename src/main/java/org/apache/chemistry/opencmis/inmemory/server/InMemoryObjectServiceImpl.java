@@ -281,8 +281,9 @@ public class InMemoryObjectServiceImpl extends InMemoryAbstractServiceImpl {
         ObjectStore objectStore = fStoreManager.getObjectStore(repositoryId);
 
         if (null == so) {
-            throw new CmisInvalidArgumentException("Cannot delete object with id  " + folderId
-                    + ". Object does not exist.");
+        	// Do not fail on an already deleted object
+        	// consider idempotency for many deleteTree
+        	return result;
         }
 
         if (!(so instanceof Folder)) {

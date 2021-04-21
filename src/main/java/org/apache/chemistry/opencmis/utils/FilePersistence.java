@@ -106,12 +106,14 @@ public class FilePersistence extends PersistenceManager {
 				List<String> parentIds = ((Fileable) so).getParentIds();
 				if (parentIds != null && parentIds.size() > 0) {
 					String id = parentIds.get(0);
-					while (!id.equals(getRootId())) {
+					while (!getRootId().equals(id) && id != null) {
 						String folderPath = storedObjectMap.get(id).getName();
-						path = folderPath + "/" + path;
+						if (folderPath != null) {
+							path = folderPath + "/" + path;
+						}
 						id = ((Folder) storedObjectMap.get(id)).getParentId();
 					}
-					path = getRootPath() + "/" + path;
+					path = getRootPath() != null ?  getRootPath() + "/" + path : "/" + path;
 				}
 			}
 			return new File(path, so.getName());
@@ -595,8 +597,10 @@ public class FilePersistence extends PersistenceManager {
 			File newFile = null;
 			if (so.getName().equals(getRootPath())) {
 				newFile = new File(getRootPath());
-			} else {
+			} else if (!path.equals("")){
 				newFile = new File(path, so.getName());
+			} else {
+				newFile = new File(getRootPath(), so.getName());
 			}
 			if (!newFile.exists()) {
 				// create the file
