@@ -52,19 +52,13 @@ public class FilePersistenceLoader {
         };
         PersistenceManager manager = storeManager
                 .getObjectStore(repositoryId).getPersistenceManager();
-        loadFolder(repositoryId, store, folder, manager.getRootId(), filenameFilter, manager);
+        
+        LOG.info("Scanning " + folder.getAbsolutePath());
+        
+        ExecutorService pool = Executors.newFixedThreadPool(100);
+        FolderProcessor folderProcessor = new FolderProcessor(pool);
+        folderProcessor.loadFolder(repositoryId, store, folder, manager.getRootId(), filenameFilter, manager);
 
         LOG.info("... End Scanning");
     }
-
-    private static void loadFolder(String repositoryId, ObjectStore store,
-            File folder, String folderId, FilenameFilter filenameFilter,
-            PersistenceManager persistenceManager) {
-        LOG.debug("Scanning " + folder.getAbsolutePath());
-        
-        ExecutorService pool = Executors.newFixedThreadPool(10);
-        FolderProcessor folderProcessor = new FolderProcessor(pool);
-        pool.execute(() -> folderProcessor.loadFolder(repositoryId, store, folder, folderId, filenameFilter, persistenceManager));
-    }
-
 }

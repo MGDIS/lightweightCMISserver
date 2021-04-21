@@ -71,7 +71,8 @@ public class DocumentImpl extends FilingImpl implements Document {
         // Set the content related properties
         if (FilterParser.isContainedInFilter(PropertyIds.CONTENT_STREAM_FILE_NAME, requestedIds)) {
             properties.put(PropertyIds.CONTENT_STREAM_FILE_NAME, objFactory.createPropertyStringData(
-                    PropertyIds.CONTENT_STREAM_FILE_NAME, null != fContent ? fContent.getFileName() : (String) null));
+            		// contentStreamFileName should always reflect the relative path to the file
+                    PropertyIds.CONTENT_STREAM_FILE_NAME, null != fContent ? this.getPath() : (String) null));
         }
         if (FilterParser.isContainedInFilter(PropertyIds.CONTENT_STREAM_ID, requestedIds)) {
             properties.put(PropertyIds.CONTENT_STREAM_ID,

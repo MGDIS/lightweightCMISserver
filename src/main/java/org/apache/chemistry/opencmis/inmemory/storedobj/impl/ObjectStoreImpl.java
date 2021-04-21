@@ -1175,7 +1175,7 @@ public class ObjectStoreImpl implements ObjectStore {
 			ContentStream contentStream = content.getContent();
 			if (null == contentStream && so.getId().length() <= 3) {
 				return null;
-			} else if (offset <= 0 && length < 0) {
+			} else if (this.persistenceManager != null) {
 				return this.persistenceManager.readContent(
 						this.persistenceManager.getFile(so, fStoredObjectMap),
 						false);
