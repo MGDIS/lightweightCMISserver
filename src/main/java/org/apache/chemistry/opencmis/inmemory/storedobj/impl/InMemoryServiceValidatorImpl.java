@@ -19,17 +19,22 @@
 package org.apache.chemistry.opencmis.inmemory.storedobj.impl;
 
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
+import org.apache.chemistry.opencmis.commons.PropertyIds;
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.definitions.TypeDefinition;
 import org.apache.chemistry.opencmis.commons.enums.AclPropagation;
+import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.RelationshipDirection;
 import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertiesImpl;
+import org.apache.chemistry.opencmis.commons.impl.dataobjects.PropertyIdImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
 import org.apache.chemistry.opencmis.inmemory.server.BaseServiceValidatorImpl;
@@ -496,7 +501,24 @@ public class InMemoryServiceValidatorImpl extends BaseServiceValidatorImpl {
     public StoredObject getObjectByPath(CallContext context, String repositoryId, String path, 
             ExtensionsData extension) {
 
+    	Boolean isDeleteTree = false;
+    	if(context.get("httpServletRequest") != null) {
+	    	String qs = ((HttpServletRequest) context.get("httpServletRequest")).getQueryString();
+	    	isDeleteTree = qs != null && qs.contains("cmisaction=deleteTree");
+    	}
         StoredObject so = super.getObjectByPath(context, repositoryId, path, extension);
+        // consider idempotency for many deleteTree on the same folder
+        if (isDeleteTree && so == null) {
+        	// add a dummy already deleted folder
+        	StoredObject odImpl = new StoredObjectImpl();
+            PropertiesImpl props = new PropertiesImpl();
+            props.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_ID, "410Gone"));
+            props.addProperty(new PropertyIdImpl(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_FOLDER.value()));
+            props.addProperty(new PropertyIdImpl(PropertyIds.BASE_TYPE_ID, BaseTypeId.CMIS_FOLDER.value()));
+            odImpl.setProperties(props.getProperties());
+            odImpl.setTypeId(BaseTypeId.CMIS_FOLDER.value());
+            return odImpl;
+        }
         checkReadAccess(repositoryId, context.getUsername(), so);
         return so;
     }

@@ -26,6 +26,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.chemistry.opencmis.commons.data.Acl;
 import org.apache.chemistry.opencmis.commons.data.CreatablePropertyTypes;
 import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
@@ -84,7 +86,7 @@ public class BaseServiceValidatorImpl implements CmisServiceValidator {
      * @return object for objectId
      */
     protected StoredObject checkStandardParameters(String repositoryId, String objectId, String action) {
-    	// consider idempotency for many deleteTree
+        // consider idempotency for many deleteTree
     	if (!"deleteTree".equals(action)) {
     		return checkStandardParameters(repositoryId, objectId);
     	}
@@ -140,6 +142,28 @@ public class BaseServiceValidatorImpl implements CmisServiceValidator {
         return so;
     }
 
+    protected StoredObject checkStandardParametersByPath(String repositoryId, String path, String user, String action) {
+    	// consider idempotency for many deleteTree
+    	if (!"deleteTree".equals(action)) {
+    		return checkStandardParametersByPath(repositoryId, path, user);
+    	}
+        if (null == repositoryId) {
+            throw new CmisInvalidArgumentException(REPOSITORY_ID_CANNOT_BE_NULL);
+        }
+
+        if (null == path) {
+            throw new CmisInvalidArgumentException("Path parameter cannot be null.");
+        }
+
+        ObjectStore objStore = fStoreManager.getObjectStore(repositoryId);
+
+        if (objStore == null) {
+            throw new CmisObjectNotFoundException(UNKNOWN_REPOSITORY_ID + repositoryId);
+        }
+
+        return objStore.getObjectByPath(path, user);
+    }
+    
     protected StoredObject checkStandardParametersByPath(String repositoryId, String path, String user) {
         if (null == repositoryId) {
             throw new CmisInvalidArgumentException(REPOSITORY_ID_CANNOT_BE_NULL);
@@ -643,8 +667,12 @@ public class BaseServiceValidatorImpl implements CmisServiceValidator {
     
     public StoredObject getObjectByPath(CallContext context, String repositoryId, String path, 
             ExtensionsData extension) {
-
-        return checkStandardParametersByPath(repositoryId, path, context.getUsername());
+    	Boolean isDeleteTree = false;
+    	if(context.get("httpServletRequest") != null) {
+	    	String qs = ((HttpServletRequest) context.get("httpServletRequest")).getQueryString();
+	    	isDeleteTree = qs != null && qs.contains("cmisaction=deleteTree");
+    	}
+        return checkStandardParametersByPath(repositoryId, path, context.getUsername(), isDeleteTree ? "deleteTree" : null);
     }
 
     
