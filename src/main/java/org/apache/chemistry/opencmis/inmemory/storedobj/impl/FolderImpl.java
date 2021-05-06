@@ -125,6 +125,9 @@ public class FolderImpl extends StoredObjectImpl implements Folder {
     	}
 		if (this.getParentId() != null && this.getStore() != null) {
 			FolderImpl parent = (FolderImpl) this.getStore().getObjectById(this.getParentId());
+			if (parent == null) {
+				return null;
+			}
 			String path = "/" + this.getName();
 			if (!parent.getPath().equals("/")) {
 				path = parent.getPath() + path;
