@@ -55,7 +55,14 @@ public class FilePersistenceLoader {
         
         LOG.info("Scanning " + folder.getAbsolutePath());
         
-        ExecutorService pool = Executors.newFixedThreadPool(100);
+        String threadEnvVariable = System.getenv("THREAD_POOL_SIZE");
+        int threadsPoolSize = 100;
+        try {
+        	threadsPoolSize = Integer.parseInt(threadEnvVariable);
+        } catch (NumberFormatException nfe) {
+        	LOG.info("No THREAD_POOL_SIZE env variable then use default size : 100");
+        }
+        ExecutorService pool = Executors.newFixedThreadPool(threadsPoolSize);
         FolderProcessor folderProcessor = new FolderProcessor(pool);
         folderProcessor.loadFolder(repositoryId, store, folder, manager.getRootId(), filenameFilter, manager);
 
