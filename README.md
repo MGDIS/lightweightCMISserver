@@ -14,6 +14,9 @@ It's a maven project. Just run
 mvn clean install
 ```
 ## Usage
+This service uses a threadpool to load files at startup. To configure the thread pool size, use `THREAD_POOL_SIZE` env variable.
+By default, the thread pool size is 100.
+
 The configuration file is `/src/main/webapp/WEB_INF/classes/repository.properties`.
 ```bash
 # ServiceFactory Implementation class
