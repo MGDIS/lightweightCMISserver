@@ -13,8 +13,6 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: 8
-          distribution: 'temurin'
-          architecture: x64
           cache: maven
       - name: Maven test
         run: mvn test -B
