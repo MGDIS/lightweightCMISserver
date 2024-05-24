@@ -1,4 +1,4 @@
-FROM java:openjdk-8-jre-alpine
+FROM openjdk:8-jre-alpine
 MAINTAINER JLL "lelan-j@mgdis.fr"
 
 # TOMCAT 
@@ -6,20 +6,17 @@ MAINTAINER JLL "lelan-j@mgdis.fr"
 EXPOSE 8080
 
 # Tomcat Version
-ENV TOMCAT_VERSION_MAJOR 7
-ENV TOMCAT_VERSION_FULL  7.0.69
+ENV TOMCAT_VERSION_MAJOR 9
+ENV TOMCAT_VERSION_FULL  9.0.89
 
 # Download and install
 RUN set -x \
   && apk add --no-cache su-exec \
   && apk add --update curl \
   && addgroup tomcat && adduser -s /bin/bash -D -G tomcat tomcat \
-  && mkdir /opt \
+  && mkdir -p /opt \
   && curl -LO https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION_MAJOR}/v${TOMCAT_VERSION_FULL}/bin/apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz \
-  && curl -LO https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION_MAJOR}/v${TOMCAT_VERSION_FULL}/bin/apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
-  && md5sum -c apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
   && gunzip -c apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz | tar -xf - -C /opt \
-  && rm -f apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
   && ln -s /opt/apache-tomcat-${TOMCAT_VERSION_FULL} /opt/tomcat \
   && rm -rf /opt/tomcat/webapps/examples /opt/tomcat/webapps/docs /opt/tomcat/webapps/manager /opt/tomcat/webapps/host-manager \
   && apk del curl \
