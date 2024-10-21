@@ -34,7 +34,7 @@ ENV CATALINA_HOME /opt/tomcat
 
 # lightweightcmis 
 
-#ENV VERSION 0.13.0-SNAPSHOT
+ENV VERSION 0.13.0-SNAPSHOT
 
 RUN set -x \
     && mkdir -p /data/cmis \
