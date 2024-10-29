@@ -42,8 +42,57 @@ public final class ConfigurationSettings {
 
     public static String getConfigurationValueAsString(String key) {
         if (null == singleInstance) {
-            LOG.error("ConfigurationSettings are not initialized. Initialize before reading values");
-            throw new CmisRuntimeException("ConfigurationSettings are not initialized.");
+            LOG.error("ConfigurationSettings are not initialized. Use default values");
+            switch (key) {
+                case "InMemoryServer.MaxContentSizeKB":
+                    return 4096 + "";
+                case "InMemoryServer.RepositoryId":
+                    return "default";
+                case "InMemoryServer.RepositoryName":
+                    return "Default Repository";
+                case "InMemoryServer.RepositoryDescription":
+                    return "The lightweight file system CMIS server";
+                case "InMemoryServer.RepositoryThinClientUri":
+                    return "http://localhost:8080/lightweightcmis/browser/root/default";
+                case "InMemoryServer.TypeDefinitionsFile":
+                    return "/tmp/cmis/default-types.xml";
+                case "InMemoryServer.Class":
+                    return "org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoreManagerImpl";
+                case "InMemoryServer.MemoryThreshold":
+                    return "10485760";
+                case "InMemoryServer.MaxContentSize":
+                    return "20971520";
+                case "InMemoryServer.EncryptTempFiles":
+                    return "false";
+                case "InMemoryServer.DeploymentTime":
+                case "InMemoryServer.CleanIntervalMinutes":
+                case "InMemoryServer.RepositoryInfoCreatorClass":
+                case "InMemoryServer.OverrideCallContext":
+                case "InMemoryServer.TypesCreatorClass":
+                    return null;
+
+                case "RepositoryFiller.Enable":
+                    return "false";
+                case "RepositoryFiller.DocumentTypeId":
+                    return "cmis:document";
+                case "RepositoryFiller.FolderTypeId":
+                    return "cmis:folder";
+                case "RepositoryFiller.DocsPerFolder":
+                    return "3";
+                case "RepositoryFiller.FolderPerFolder":
+                    return "2";
+                case "RepositoryFiller.Depth":
+                    return "3";
+                case "RepositoryFiller.ContentSizeInKB":
+                    return "32";
+                case "RepositoryFiller.ContentKind":
+                    return "lorem/text";
+
+                case "persistenceDirectory":
+                    return "/tmp/cmis/default";
+                default:
+                    break;
+            }
         }
         return singleInstance.getConfigurationValueIntern(key);
     }
