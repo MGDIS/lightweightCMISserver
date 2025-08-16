@@ -1,0 +1,21 @@
+meta {
+  name: SearchDocMeta
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://localhost:8080/lightweightcmis/browser/default/
+  body: multipartForm
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}
+
+body:multipart-form {
+  cmisaction: query
+  statement: SELECT doc.cmis:objectId, doc.cmis:name, ns:refBusinessCase, ns:customerId FROM cmis:document AS doc LEFT OUTER JOIN ns:myschema AS ns ON doc.cmis:objectId = ns.cmis:objectId WHERE ns:customerId='xER76h9oP'
+}

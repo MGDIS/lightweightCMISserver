@@ -1,0 +1,20 @@
+meta {
+  name: DeleteFolder
+  type: http
+  seq: 12
+}
+
+post {
+  url: http://localhost:8080/lightweightcmis/browser/default/root/MyBusiness
+  body: multipartForm
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}
+
+body:multipart-form {
+  cmisaction: delete
+}

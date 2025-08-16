@@ -1,0 +1,25 @@
+meta {
+  name: CreateDoc
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/lightweightcmis/browser/default/root/MyBusiness
+  body: multipartForm
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}
+
+body:multipart-form {
+  cmisaction: createDocument
+  propertyId[0]: cmis:objectTypeId
+  propertyValue[0]: cmis:document
+  propertyId[1]: cmis:name
+  propertyValue[1]: File1
+  file: @file()
+}

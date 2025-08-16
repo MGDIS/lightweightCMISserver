@@ -1,0 +1,20 @@
+meta {
+  name: DeleteDocMeta
+  type: http
+  seq: 11
+}
+
+post {
+  url: http://localhost:8080/lightweightcmis/browser/default/root/MyBusiness/File2
+  body: multipartForm
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}
+
+body:multipart-form {
+  cmisaction: delete
+}

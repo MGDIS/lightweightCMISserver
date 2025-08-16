@@ -1,0 +1,21 @@
+meta {
+  name: SearchDocName
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://localhost:8080/lightweightcmis/browser/default/
+  body: multipartForm
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}
+
+body:multipart-form {
+  cmisaction: query
+  statement: select * from cmis:document where cmis:name like 'File%'
+}
