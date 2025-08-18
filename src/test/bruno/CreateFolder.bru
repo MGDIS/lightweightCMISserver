@@ -1,0 +1,25 @@
+meta {
+  name: CreateFolder
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/lightweightcmis/browser/default/root/
+  body: multipartForm
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}
+
+body:multipart-form {
+  cmisaction: createFolder
+  propertyId[0]: cmis:objectTypeId
+  propertyValue[0]: cmis:folder
+  propertyId[1]: cmis:name
+  propertyValue[1]: MyBusiness
+  file: @file()
+}

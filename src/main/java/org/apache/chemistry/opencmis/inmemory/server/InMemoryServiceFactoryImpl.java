@@ -440,6 +440,7 @@ public class InMemoryServiceFactoryImpl extends AbstractServiceFactory {
                         typeDef = XMLConverter.convertTypeDefinition(parser);
                         LOG.debug("New CMIS type : "
                                 + typeDef.getLocalName());
+                        LOG.debug("Number of properties found in schema : " + typeDef.getPropertyDefinitions().size());
                         if (typeDef.getPropertyDefinitions() == null) {
                             ((AbstractTypeDefinition) typeDef)
                                     .setPropertyDefinitions(new LinkedHashMap<String, PropertyDefinition<?>>());

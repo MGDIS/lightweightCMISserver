@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cmis:repositoryInfo xmlns:cmis="http://docs.oasis-open.org/ns/cmis/core/200908/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<cmis:typeDefinitions xmlns:ns="http://mycompany.com/myapp/">
+		<type xsi:type="cmisTypeSecondaryDefinitionType">
+			<cmis:id>ns:myschema</cmis:id>
+			<cmis:baseId>cmis:secondary</cmis:baseId>
+			<cmis:displayName>Schema for additional metadata</cmis:displayName>
+			<cmis:description>Secondary type that adds business metadata to a document.</cmis:description>
+			<cmis:localName>myschema</cmis:localName>
+			<cmis:localNamespace>http://mycompany.com/myapp/</cmis:localNamespace>
+			<cmis:creatable>true</cmis:creatable>
+			<cmis:fileable>false</cmis:fileable>
+			<cmis:queryable>true</cmis:queryable>
+			<cmis:queryName>ns:myschema</cmis:queryName>
+			<cmis:fulltextIndexed>false</cmis:fulltextIndexed>
+			<cmis:includedInSupertypeQuery>true</cmis:includedInSupertypeQuery>
+			<cmis:controllablePolicy>false</cmis:controllablePolicy>
+			<cmis:controllableACL>false</cmis:controllableACL>
+			<cmis:propertyStringDefinition>
+				<cmis:id>ns:refBusinessCase</cmis:id>
+				<cmis:displayName>Business case number</cmis:displayName>
+				<cmis:description>Reference of the business case associated to the document.</cmis:description>
+				<cmis:localName>refBusinessCase</cmis:localName>
+				<cmis:localNamespace>http://mycompany.com/myapp/</cmis:localNamespace>
+				<cmis:propertyType>string</cmis:propertyType>
+				<cmis:cardinality>single</cmis:cardinality>
+				<cmis:required>false</cmis:required>
+				<cmis:queryable>true</cmis:queryable>
+				<cmis:queryName>ns:refBusinessCase</cmis:queryName>
+				<cmis:orderable>true</cmis:orderable>
+				<cmis:updatability>readwrite</cmis:updatability>
+				<cmis:inherited>false</cmis:inherited>
+			</cmis:propertyStringDefinition>
+			<cmis:propertyStringDefinition>
+				<cmis:id>ns:customerId</cmis:id>
+				<cmis:displayName>Customer number</cmis:displayName>
+				<cmis:description>Identifier of the customer associated to the document.</cmis:description>
+				<cmis:localName>customerId</cmis:localName>
+				<cmis:localNamespace>http://mycompany.com/myapp/</cmis:localNamespace>
+				<cmis:propertyType>string</cmis:propertyType>
+				<cmis:cardinality>single</cmis:cardinality>
+				<cmis:required>false</cmis:required>
+				<cmis:queryable>true</cmis:queryable>
+				<cmis:queryName>ns:customerId</cmis:queryName>
+				<cmis:orderable>true</cmis:orderable>
+				<cmis:updatability>readwrite</cmis:updatability>
+				<cmis:inherited>false</cmis:inherited>
+			</cmis:propertyStringDefinition>
+		</type>
+	</cmis:typeDefinitions>
+</cmis:repositoryInfo>
