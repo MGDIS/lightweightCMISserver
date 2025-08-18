@@ -61,7 +61,7 @@ RUN set -x \
  
 COPY docker-entrypoint.sh /
  
-RUN chmod 755 /docker-entrypoint.sh
+RUN dos2unix ./docker-entrypoint.sh && chmod 755 /docker-entrypoint.sh
  
 ENTRYPOINT ["/docker-entrypoint.sh"]
  

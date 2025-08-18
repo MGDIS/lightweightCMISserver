@@ -5,14 +5,9 @@ meta {
 }
 
 post {
-  url: http://localhost:8080/lightweightcmis/browser/default/root/
+  url: {{url}}/lightweightcmis/browser/default/root/
   body: multipartForm
-  auth: basic
-}
-
-auth:basic {
-  username: admin
-  password: admin
+  auth: inherit
 }
 
 body:multipart-form {
@@ -21,5 +16,5 @@ body:multipart-form {
   propertyValue[0]: cmis:folder
   propertyId[1]: cmis:name
   propertyValue[1]: MyBusiness
-  file: @file()
+  file: @file(bruno.json)
 }

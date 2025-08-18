@@ -1,0 +1,18 @@
+meta {
+  name: GetMeta
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{url}}/lightweightcmis/browser/default/root/?cmisselector=properties&objectId={{docId}}
+  body: multipartForm
+  auth: inherit
+}
+
+params:query {
+  cmisselector: properties
+  objectId: {{docId}}
+  ~returnVersion: latest
+  ~succinct: true
+}

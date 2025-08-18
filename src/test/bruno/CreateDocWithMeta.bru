@@ -5,14 +5,9 @@ meta {
 }
 
 post {
-  url: http://localhost:8080/lightweightcmis/browser/default/root/MyBusiness
+  url: {{url}}/lightweightcmis/browser/default/root/MyBusiness
   body: multipartForm
-  auth: basic
-}
-
-auth:basic {
-  username: admin
-  password: admin
+  auth: inherit
 }
 
 body:multipart-form {
@@ -21,11 +16,15 @@ body:multipart-form {
   propertyValue[0]: cmis:document
   propertyId[1]: cmis:name
   propertyValue[1]: File2
-  file: @file()
+  file: @file(CreateDoc.bru)
   propertyId[2]: cmis:secondaryObjectTypeIds
   propertyValue[2]: ns:myschema
   propertyId[3]: ns:refBusinessCase
   propertyValue[3]: BC00012
   propertyId[4]: ns:customerId
   propertyValue[4]: xER76h9oP
+}
+
+script:post-response {
+  bru.setVar("docId",res.body.exampleExtension.objectId)
 }

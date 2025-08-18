@@ -1,0 +1,19 @@
+meta {
+  name: SetContent
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{url}}/lightweightcmis/browser/default/root/
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  cmisaction: setContent
+  objectId: {{docId}}
+  overwriteFlag: true
+  content: @file(CreateDocWithMeta.bru)
+  ~succinct: true
+}

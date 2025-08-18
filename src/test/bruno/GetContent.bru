@@ -1,15 +1,11 @@
 meta {
-  name: DeleteDocMeta
+  name: GetContent
   type: http
-  seq: 15
+  seq: 10
 }
 
-post {
+get {
   url: {{url}}/lightweightcmis/browser/default/root/MyBusiness/File2
   body: multipartForm
   auth: inherit
-}
-
-body:multipart-form {
-  cmisaction: delete
 }
