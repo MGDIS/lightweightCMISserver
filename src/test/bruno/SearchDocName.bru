@@ -5,14 +5,9 @@ meta {
 }
 
 post {
-  url: http://localhost:8080/lightweightcmis/browser/default/
+  url: {{url}}/lightweightcmis/browser/default/
   body: multipartForm
-  auth: basic
-}
-
-auth:basic {
-  username: admin
-  password: admin
+  auth: inherit
 }
 
 body:multipart-form {

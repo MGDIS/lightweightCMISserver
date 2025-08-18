@@ -5,12 +5,7 @@ meta {
 }
 
 get {
-  url: http://localhost:8080/lightweightcmis/browser/default/root
+  url: {{url}}/lightweightcmis/browser/default/root/
   body: none
-  auth: basic
-}
-
-auth:basic {
-  username: admin
-  password: admin
+  auth: inherit
 }
