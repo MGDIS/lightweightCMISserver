@@ -1,11 +1,11 @@
 meta {
-  name: GetMeta
+  name: GetMetaSuccinct
   type: http
-  seq: 11
+  seq: 12
 }
 
 get {
-  url: {{url}}/lightweightcmis/browser/default/root/?cmisselector=properties&objectId={{docId}}
+  url: {{url}}/lightweightcmis/browser/default/root/?cmisselector=properties&objectId={{docId}}&succinct=true
   body: multipartForm
   auth: inherit
 }
@@ -13,6 +13,6 @@ get {
 params:query {
   cmisselector: properties
   objectId: {{docId}}
+  succinct: true
   ~returnVersion: latest
-  ~succinct: false
 }
