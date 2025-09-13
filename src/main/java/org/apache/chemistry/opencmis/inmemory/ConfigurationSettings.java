@@ -55,7 +55,7 @@ public final class ConfigurationSettings {
                 case "InMemoryServer.RepositoryThinClientUri":
                     return "http://localhost:8080/lightweightcmis/browser/root/default";
                 case "InMemoryServer.TypeDefinitionsFile":
-                    return "/tmp/cmis/default-types.xml";
+                    return "/data/cmis/default-types.xml";
                 case "InMemoryServer.Class":
                     return "org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoreManagerImpl";
                 case "InMemoryServer.MemoryThreshold":
@@ -89,7 +89,7 @@ public final class ConfigurationSettings {
                     return "lorem/text";
 
                 case "persistenceDirectory":
-                    return "/tmp/cmis/default";
+                    return "/data/cmis/default";
                 default:
                     break;
             }
