@@ -1,0 +1,17 @@
+meta {
+  name: GetContentStream
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{url}}/lightweightcmis/browser/default/root/?cmisselector=content&objectId={{docId}}&download=inline
+  body: multipartForm
+  auth: inherit
+}
+
+params:query {
+  cmisselector: content
+  objectId: {{docId}}
+  download: inline
+}

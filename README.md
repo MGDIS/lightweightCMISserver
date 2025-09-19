@@ -33,9 +33,7 @@ There are many properties to configure for a repository. The most important ones
 auth.mode=basic
 
 # List of authenticated users
-user.1 = test:test
-user.2 = reader:reader
-user.3 = admin:admin
+user.1 = admin:admin
 
 # In Memory Settings
 InMemoryServer.RepositoryId=default
@@ -43,7 +41,7 @@ InMemoryServer.TypeDefinitionsFile=/data/cmis/default-types.xml
 InMemoryServer.Class=org.apache.chemistry.opencmis.inmemory.storedobj.impl.StoreManagerImpl
 InMemoryServer.TempDir=/temp/cmis/A1
 
-# settings for init repository with data
+# Settings for init repository with data
 persistenceDirectory=/data/cmis/default
 ```	
 
@@ -51,7 +49,7 @@ persistenceDirectory=/data/cmis/default
 
 CMIS 1.1 supports additional metadata schema (secondary types). An example of a definition file for such secondary types is provided in the `default-types.xml` file, which is copied in the properties file in order to be active by default in the Docker version of the project.
 
-You should first adjust the content of this file to your needs if you intend to use additional metadata schema (this is an option and you may use the server without it).
+You should first adjust the content of this file to your needs if you intend to use additional metadata schema (this is an option and you may use the server without it). A more elegant option is to realize this overload in a secondary Docker image based on the present one.
 
 ## Compilation
 
@@ -68,9 +66,9 @@ mvn clean install
 If you want to create a Docker image, run the following commands :
 
 ```sh
-git clone https://github.com/MGDIS/lightweightCMISserver.git
+git clone https://salvia.visualstudio.com/DefaultCollection/LightWeightCMIS/_git/LightweightCMISServer
 cd lightweightCMISserver
-docker build -t lightweightcmis .
+docker build -t salviaregistry.azurecr.io/lightweightcmis:1.0-beta .
 ```
 
 ## Install
@@ -79,17 +77,17 @@ docker build -t lightweightcmis .
 
 To install WAR file, you should use a Tomcat or Jetty server. 
 In Tomcat, just copy the war into /webapp directory and start your service. 
-An index page will be available at(`http://localhost:8080/lightweightcmis`).
+An index page will be available at `http://localhost:8080/lightweightcmis`.
 
 ### Docker
 
 Installation with Docker is a one-liner :
 
 ``` sh
-docker run -d --name cms -p 8080:8080 lightweightcmis
+docker run -d --name ged -p 8080:8080 salviaregistry.azurecr.io/lightweightcmis:1.0-beta
 ```
 
-Note that, in order to secure your files, you should use a volume based on the path indicated in the configuration file. **Warning : if nothing doing this, you will most certainly lose your documents !**
+Note that, in order to secure your files, you should use a volume based on the path indicated in the configuration file (by default, `/data/cmis/default`). **Warning : if nothing doing this, you will most certainly lose your documents !**
 
 ## Testing
 
@@ -110,7 +108,7 @@ LEFT OUTER JOIN ns:myschema AS ns ON doc.cmis:objectId = ns.cmis:objectId
 WHERE ns:customerId='xER76h9oP'
 ```
 
-## CMIS client
+### CMIS client
 
 There is a good CMIS client developed by Apache Chemistry. Just download the archive available here (`http://chemistry.apache.org/java/developing/tools/dev-tools-workbench.html`). Uncompress it and run `workbench.bat` or `workbench.sh` (depends on your platform). Note that client is often version dependant, so you may have to adjust to the version of Apache Chemistry used in the present code (currently 0.13).
 
@@ -127,16 +125,8 @@ Client Compression : Off
 Cookies : On
 ```
 
-### Compliance
+Workbench provides a Test Client Kit (TCK) to verify CMIS 1.1 conformity.
 
-Workbench provides a Test Client Kit (TCK) to verify CMIS 1.1 conformity. Feel free to run it on this implementation !
+## TODO
 
-### Proxyfied server
-
-If you want to trace every HTTP exchange between client and server then just install Fiddler (http://www.telerik.com/fiddler) and change your server url :
-
-```http	
-URL : http://localhost.:8080/lightweightcmis/browser
-```
-
-> Note: Usage of this approach may slow down the server's response time! 
+There remains some features that could be added to the project. They are listed in a separate [README-TODO.md](./README-TODO.md) file.
