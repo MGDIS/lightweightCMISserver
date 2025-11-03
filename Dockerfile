@@ -7,16 +7,19 @@ EXPOSE 8080
 
 # Tomcat Version
 ENV TOMCAT_VERSION_MAJOR 9
-ENV TOMCAT_VERSION_FULL  9.0.89
+ENV TOMCAT_VERSION_FULL  9.0.111
 
 # Download and install
 RUN set -x \
   && apk add --no-cache su-exec \
-  && apk add --update curl \
+  && apk add --update curl unzip \
   && addgroup tomcat && adduser -s /bin/bash -D -G tomcat tomcat \
   && mkdir -p /opt \
   && curl -LO https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION_MAJOR}/v${TOMCAT_VERSION_FULL}/bin/apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz \
+#  && curl -LO https://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_VERSION_MAJOR}/v${TOMCAT_VERSION_FULL}/bin/apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
+#  && md5sum -c apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
   && gunzip -c apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz | tar -xf - -C /opt \
+#  && rm -f apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz apache-tomcat-${TOMCAT_VERSION_FULL}.tar.gz.md5 \
   && ln -s /opt/apache-tomcat-${TOMCAT_VERSION_FULL} /opt/tomcat \
   && rm -rf /opt/tomcat/webapps/examples /opt/tomcat/webapps/docs /opt/tomcat/webapps/manager /opt/tomcat/webapps/host-manager \
   && apk del curl \
@@ -32,7 +35,6 @@ ENV CATALINA_HOME /opt/tomcat
 # lightweightcmis 
 
 #ENV VERSION 0.13.0-SNAPSHOT
-ENV VERSION 0.12.18
 
 RUN set -x \
     && mkdir -p /data/cmis \
