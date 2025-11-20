@@ -13,6 +13,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import javax.xml.stream.XMLStreamReader;
 
@@ -35,11 +36,13 @@ import org.apache.chemistry.opencmis.commons.impl.json.JSONObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Document;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.ObjectStore;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Relationship;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FilingImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
+import org.apache.chemistry.opencmis.inmemory.storedobj.impl.ObjectStoreImpl;
 import org.apache.chemistry.opencmis.server.support.TypeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,12 +106,14 @@ public class FilePersistence extends PersistenceManager {
 				List<String> parentIds = ((Fileable) so).getParentIds();
 				if (parentIds != null && parentIds.size() > 0) {
 					String id = parentIds.get(0);
-					while (!id.equals(getRootId())) {
+					while (!getRootId().equals(id) && id != null) {
 						String folderPath = storedObjectMap.get(id).getName();
-						path = folderPath + "/" + path;
+						if (folderPath != null) {
+							path = folderPath + "/" + path;
+						}
 						id = ((Folder) storedObjectMap.get(id)).getParentId();
 					}
-					path = getRootPath() + "/" + path;
+					path = getRootPath() != null ?  getRootPath() + "/" + path : "/" + path;
 				}
 			}
 			return new File(path, so.getName());
@@ -132,7 +137,39 @@ public class FilePersistence extends PersistenceManager {
 	}
 
 	/**
+	 * Read file descriptor.
+	 * 
+	 * @return ContentStream without stream
+	 */
+	public ContentStream readFileAttributes(File file) {
+
+		if (root == null)
+			return null;
+
+		if (!file.isFile()) {
+			throw new CmisStreamNotSupportedException(file.getAbsolutePath()
+					+ " is not a file!");
+		}
+
+		if (file.length() == 0) {
+			LOG.warn("Document (" + file.getAbsolutePath()
+					+ ") has no content!");
+		}
+
+		ContentStreamImpl result;
+		result = new ContentStreamImpl();
+
+		result.setFileName(file.getName());
+		result.setLength(BigInteger.valueOf(file.length()));
+		result.setMimeType(MimeTypes.getMIMEType(file));
+	
+		return result;
+	}
+	
+	/**
 	 * Read file content.
+	 * 
+	 * @return ContentStream with stream
 	 */
 	public ContentStream readContent(File file, boolean closeOnEnd) {
 
@@ -149,23 +186,15 @@ public class FilePersistence extends PersistenceManager {
 					+ ") has no content!");
 		}
 
+		ContentStream result = this.readFileAttributes(file);
+		
 		InputStream stream = null;
 		try {
 			// stream = new FileInputStream(file);
 			stream = org.apache.commons.io.FileUtils.openInputStream(file);
 
 			LOG.debug("Read content from " + file.getAbsolutePath());
-			// stream = new BufferedInputStream(new FileInputStream(file),
-			// BUFFER_SIZE);
-
-			// compile data
-			ContentStreamImpl result;
-			result = new ContentStreamImpl();
-
-			result.setFileName(file.getName());
-			result.setLength(BigInteger.valueOf(file.length()));
-			result.setMimeType(MimeTypes.getMIMEType(file));
-			result.setStream(stream);
+			((ContentStreamImpl) result).setStream(stream);
 
 			return result;
 		} catch (IOException e) {
@@ -204,7 +233,7 @@ public class FilePersistence extends PersistenceManager {
 			// stream = new FileInputStream(file);
 			stream = org.apache.commons.io.FileUtils.openInputStream(file);
 
-			LOG.info("Get stream content from " + file.getAbsolutePath());
+			LOG.debug("Get stream content from " + file.getAbsolutePath());
 			// stream = new BufferedInputStream(new FileInputStream(file),
 			// BUFFER_SIZE);
 
@@ -228,7 +257,7 @@ public class FilePersistence extends PersistenceManager {
 			int length = (int) newFile.length();
 			// Files.copy(stream, Paths.get(newFile.getAbsolutePath()),
 			// StandardCopyOption.REPLACE_EXISTING);
-			LOG.info("Write content in " + newFile.getAbsolutePath());
+			LOG.debug("Write content in " + newFile.getAbsolutePath());
 			return length;
 		} catch (IOException e) {
 			throw new CmisStorageException("Could not write content in "
@@ -299,7 +328,7 @@ public class FilePersistence extends PersistenceManager {
 					metadataFile), json.toString());
 			// out.print(json);
 			// out.flush();
-			LOG.info("Writing metadata in " + metadataFile);
+			LOG.debug("Writing metadata in " + metadataFile);
 		} catch (IOException e) {
 			throw new CmisStorageException("Could not write metadata: "
 					+ e.getMessage(), e);
@@ -309,7 +338,7 @@ public class FilePersistence extends PersistenceManager {
 	/**
 	 * Read the metadata from disc.
 	 */
-	public StoredObject readCMISFromDisk(File metadataFile) {
+	public SimpleImmutableEntry<Boolean, StoredObject> readCMISFromDisk(File metadataFile, ObjectStore store) {
 
 		if (root == null)
 			return null;
@@ -317,9 +346,9 @@ public class FilePersistence extends PersistenceManager {
 		if (!metadataFile.exists()) {
 			// check if a XXXX.cmis.xml file exists at the same position
 			if (new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + "/" + FilePersistenceLoader.SHADOW_FOLDER).exists())
-				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + "/cmis.xml"));
+				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + "/cmis.xml"), store);
 			else if (new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "")  + FilePersistenceLoader.SHADOW_EXT).exists())
-				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + ".cmis.xml"));
+				return readCMISFromDisk(new File(metadataFile.getAbsolutePath().replace(FilePersistenceLoader.SUFFIXE_METADATA,  "") + ".cmis.xml"), store);
 			else 
 				return null;
 		}
@@ -338,6 +367,7 @@ public class FilePersistence extends PersistenceManager {
 		if (storedObjectStr.equals("")) {
 		    return null;
 		}
+		Boolean toBeSaved = false;
 		StoredObject result = null;
 		LOG.debug(storedObjectStr);
 		
@@ -392,10 +422,10 @@ public class FilePersistence extends PersistenceManager {
 	            IOUtils.closeQuietly(stream);
 	        }
 		} else if (metadataFile.getName().endsWith(FilePersistenceLoader.SUFFIXE_METADATA)) {
-			result = new StoredObjectJsonSerializer().deserialize(storedObjectStr, typeManager);
+			return new StoredObjectJsonSerializer().deserialize(storedObjectStr, typeManager, store);
 		}
 
-		return result;
+		return new SimpleImmutableEntry<Boolean, StoredObject>(toBeSaved, result);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -567,8 +597,10 @@ public class FilePersistence extends PersistenceManager {
 			File newFile = null;
 			if (so.getName().equals(getRootPath())) {
 				newFile = new File(getRootPath());
-			} else {
+			} else if (!path.equals("")){
 				newFile = new File(path, so.getName());
+			} else {
+				newFile = new File(getRootPath(), so.getName());
 			}
 			if (!newFile.exists()) {
 				// create the file

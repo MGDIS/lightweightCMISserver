@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.ObjectStore;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 
 public class InMemoryPersistence extends PersistenceManager {
@@ -71,7 +73,7 @@ public class InMemoryPersistence extends PersistenceManager {
     }
 
     
-    public StoredObject readCMISFromDisk(File metadataFile) {
+    public SimpleImmutableEntry<Boolean, StoredObject> readCMISFromDisk(File metadataFile, ObjectStore store) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -114,5 +116,12 @@ public class InMemoryPersistence extends PersistenceManager {
 			StoredObject so, Folder newParent) throws IOException {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public ContentStream readFileAttributes(File file) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

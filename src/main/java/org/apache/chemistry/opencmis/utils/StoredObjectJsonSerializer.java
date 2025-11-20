@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import org.apache.chemistry.opencmis.commons.impl.json.parser.JSONParser;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Fileable;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.Folder;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.MultiFiling;
+import org.apache.chemistry.opencmis.inmemory.storedobj.api.ObjectStore;
 import org.apache.chemistry.opencmis.inmemory.storedobj.api.StoredObject;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.DocumentImpl;
 import org.apache.chemistry.opencmis.inmemory.storedobj.impl.FolderImpl;
@@ -186,7 +188,7 @@ public class StoredObjectJsonSerializer {
     }
 
     @SuppressWarnings("unchecked")
-    public StoredObject deserialize(final String jsonString, TypeManager typeManager) {
+    public SimpleImmutableEntry<Boolean, StoredObject> deserialize(final String jsonString, TypeManager typeManager, ObjectStore store) {
         if (jsonString == null) {
             return null;
         }
@@ -199,6 +201,7 @@ public class StoredObjectJsonSerializer {
             return null;
         }
         StoredObject so = null;
+        boolean toBeSaved = false;
         if ("cmis:folder".equals(result.get(PropertyIds.OBJECT_TYPE_ID))) {
             so = new FolderImpl();
             if (result.containsKey(PropertyIds.PARENT_ID)
@@ -220,6 +223,7 @@ public class StoredObjectJsonSerializer {
                 }
             }
         }
+        so.setStore(store);
         if (result.containsKey(PropertyIds.OBJECT_ID)
                 && result.get(PropertyIds.OBJECT_ID) != null) {
             so.setId(result.get(PropertyIds.OBJECT_ID).toString());
@@ -292,9 +296,16 @@ public class StoredObjectJsonSerializer {
                     jsonPropertyData.get("firstValue") != null ? jsonPropertyData.get("firstValue").toString() : null);
             properties.put(property.getKey(), propertyData);
         }
+        
+        // check cmis:path value
+        if (result.containsKey(PropertyIds.PATH)
+                && !result.get(PropertyIds.PATH).equals(((Fileable) so).getPath())) {
+        	toBeSaved = true;
+        }
+        
         so.setProperties(properties);
 
-        return so;
+        return new SimpleImmutableEntry<>(toBeSaved, so);
     }
 
     @SuppressWarnings("unchecked")
