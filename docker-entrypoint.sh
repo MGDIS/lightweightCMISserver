@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# A décommenter pour le debug, de façon à 1) sortir immédiatement sur une erreur, 2) émettre une erreur si une variable d'environnement n'est pas définie, et 3) afficher toutes les commandes dans le log
+# Uncomment for debugging to 1) exit immediately on error, 2) treat unset variables as errors, and 3) print commands as they are executed
 # set -eux
 
-# Les variables d'environnement permettent de paramétrer les crédentiels
-# La spécification du mot de passe est obligatoire pour des raisons de sécurité
+# Environment variables are used to configure credentials
+# Providing a password is mandatory for security reasons
 SERVICE_ACCOUNT_LOGIN=${SERVICE_ACCOUNT_LOGIN:-admin}
 if [ -z "$SERVICE_ACCOUNT_PASSWORD" ]; then
     echo "Error: SERVICE_ACCOUNT_PASSWORD must be specified using the -e flag (SERVICE_ACCOUNT_LOGIN can be used to alter default login, which is admin)."
@@ -13,11 +13,11 @@ fi
 TOMCAT_LOGIN=${TOMCAT_LOGIN:-$SERVICE_ACCOUNT_LOGIN}
 TOMCAT_PASSWORD=${TOMCAT_PASSWORD:-$SERVICE_ACCOUNT_PASSWORD}
 
-# Mise à jour du fichier de configuration du compte utilisé pour la connexion au endpoint CMIS
+# Update the configuration file that defines the account used to connect to the CMIS endpoint
 # echo "Updating default.properties with login: $SERVICE_ACCOUNT_LOGIN and password: $SERVICE_ACCOUNT_PASSWORD"
 sed -i "s|^user\.1 = .*|user\.1 = $SERVICE_ACCOUNT_LOGIN:$SERVICE_ACCOUNT_PASSWORD|" /opt/apache-tomcat-9.0.89/webapps/lightweightcmis/WEB-INF/classes/default.properties
 
-# Mise à jour du fichier de configuration des utilisateurs Tomcat
+# Update the Tomcat users configuration file
 # echo "Updating tomcat-users.xml with login: $TOMCAT_LOGIN and password: $TOMCAT_PASSWORD"
 sed -i "s|<user name=\"[^\"]*\"|<user name=\"$TOMCAT_LOGIN\"|" /opt/tomcat/conf/tomcat-users.xml
 sed -i "s|password=\"[^\"]*\"|password=\"$TOMCAT_PASSWORD\"|" /opt/tomcat/conf/tomcat-users.xml
