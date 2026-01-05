@@ -4,7 +4,7 @@
 
 **This implementation is a fork of Apache Chemistry OpenCMIS inMemory Server with file persistence!**
 
-If you want a lightweight CMIS 1.1 server that allows custom types, secondary types and authentication support, this implementation is for you. It persists all content files and metadata files (*.metatdata* extension file) on hard drive. Owing to its memory-loading of metadata, it allows for large volumes of documents in queries in spite of the metadata being stored in files. Of course, loading time will be impacted with higher volumes of documents. Tests has shown working performance with 200 000 documents.
+If you want a lightweight CMIS 1.1 server that allows custom types, secondary types and authentication support, this implementation is for you. It persists all content files and metadata files (_.metatdata_ extension file) on hard drive. Owing to its memory-loading of metadata, it allows for large volumes of documents in queries in spite of the metadata being stored in files. Of course, loading time will be impacted with higher volumes of documents. Tests has shown working performance with 200 000 documents.
 
 If you want to know more about the CMIS Standard, see https://www.oasis-open.org/committees/cmis.
 
@@ -18,9 +18,9 @@ The configuration file is `/src/main/webapp/WEB_INF/classes/repository.propertie
 
 ```bash
 # ServiceFactory Implementation class
-# Don't modify unless you know exactly what you are doing	
+# Don't modify unless you know exactly what you are doing
 class=org.apache.chemistry.opencmis.inmemory.server.InMemoryServiceFactoryImpl
-```	
+```
 
 All the configure repository need to have a dedicated properties file at /src/main/webapp/WEB_INF/classes/. The content of these repositories file is the same as `default.properties`.
 
@@ -43,7 +43,7 @@ InMemoryServer.TempDir=/temp/cmis/A1
 
 # Settings for init repository with data
 persistenceDirectory=/data/cmis/default
-```	
+```
 
 ### Adding metadata schema
 
@@ -57,7 +57,7 @@ You should first adjust the content of this file to your needs if you intend to 
 
 It's a maven project. Just run :
 
-```bash    
+```bash
 mvn clean install
 ```
 
@@ -66,25 +66,25 @@ mvn clean install
 If you want to create a Docker image, run the following commands :
 
 ```sh
-git clone https://salvia.visualstudio.com/DefaultCollection/LightWeightCMIS/_git/LightweightCMISServer
+git clone https://github.com/MGDIS/lightweightCMISserver.git
 cd lightweightCMISserver
-docker build -t salviaregistry.azurecr.io/lightweightcmis:1.0-beta .
+docker build -t lightweightcmis:1.0-beta .
 ```
 
 ## Install
 
 ### Inside Java server
 
-To install WAR file, you should use a Tomcat or Jetty server. 
-In Tomcat, just copy the war into /webapp directory and start your service. 
+To install WAR file, you should use a Tomcat or Jetty server.
+In Tomcat, just copy the war into /webapp directory and start your service.
 An index page will be available at `http://localhost:8080/lightweightcmis`.
 
 ### Docker
 
 Installation with Docker is a one-liner :
 
-``` sh
-docker run -d --name ged -p 8080:8080 salviaregistry.azurecr.io/lightweightcmis:1.0-beta
+```sh
+docker run -d --name ged -p 8080:8080 lightweightcmis:1.0-beta
 ```
 
 Note that, in order to secure your files, you should use a volume based on the path indicated in the configuration file (by default, `/data/cmis/default`). **Warning : if nothing doing this, you will most certainly lose your documents !**
@@ -102,9 +102,9 @@ Bruno is a Postman-like software that helps running easily HTTP services. The pr
 The following is an example of the queries you can use when operating the CMS with secondary types :
 
 ```sql
-SELECT doc.cmis:objectId, doc.cmis:name, ns:refBusinessCase, ns:customerId 
-FROM cmis:document AS doc 
-LEFT OUTER JOIN ns:myschema AS ns ON doc.cmis:objectId = ns.cmis:objectId 
+SELECT doc.cmis:objectId, doc.cmis:name, ns:refBusinessCase, ns:customerId
+FROM cmis:document AS doc
+LEFT OUTER JOIN ns:myschema AS ns ON doc.cmis:objectId = ns.cmis:objectId
 WHERE ns:customerId='xER76h9oP'
 ```
 
@@ -114,7 +114,7 @@ There is a good CMIS client developed by Apache Chemistry. Just download the arc
 
 The connection information are the following (please adjust to the changes if you made some in the customization) :
 
-```bash    
+```bash
 URL : http://localhost:8080/lightweightcmis/browser
 Binding : Browser
 Username : test
