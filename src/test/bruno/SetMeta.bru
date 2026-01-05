@@ -1,7 +1,7 @@
 meta {
-  name: SetContent
+  name: SetMeta
   type: http
-  seq: 15
+  seq: 16
 }
 
 post {
@@ -11,9 +11,9 @@ post {
 }
 
 body:multipart-form {
-  cmisaction: setContent
+  cmisaction: update
   objectId: {{docId}}
   overwriteFlag: true
-  content: @file(CreateDocWithMeta.bru)
-  ~succinct: true
+  propertyId[0]: ns:refBusinessCase
+  propertyValue[0]: BC00027
 }
